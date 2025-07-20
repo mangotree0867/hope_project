@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -27,6 +28,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
                             videoView.setVideoURI(videoUri); // 방금 촬영한 URI
                             videoView.setVisibility(View.VISIBLE); // 화면에 보이게 하기
                             videoView.start(); // 자동 재생
+                            
+                            // Upload video to API
+                            uploadVideoToAPI(new File(videoFilePath));
                         }
                     }
             );
@@ -211,5 +223,50 @@ public class MainActivity extends AppCompatActivity {
         return Bitmap.createBitmap(
                 bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true
         );
+    }
+    
+    // API로 영상 업로드
+    private void uploadVideoToAPI(File videoFile) {
+        new Thread(() -> {
+            try {
+
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("https://api-v2-test.unpa.me/banners?bannerLocation=MAIN&platform=PC_WEB")
+                        .get()
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String responseBody = response.body() != null ? response.body().string() : "";
+                
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("API Response")
+                                .setMessage(responseBody)
+                                .setPositiveButton("확인", null)
+                                .show();
+                    } else {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("API 요청 실패")
+                                .setMessage("응답 코드: " + response.code())
+                                .setPositiveButton("확인", null)
+                                .show();
+                    }
+                });
+                
+                response.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, 
+                            "업로드 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        }).start();
     }
 }
