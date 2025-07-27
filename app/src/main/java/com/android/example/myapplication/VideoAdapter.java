@@ -46,9 +46,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         );
         holder.thumbnail.setImageBitmap(thumb);
 
-        // 클릭하면 영상 재생 Activity로 이동
+        // 클릭하면 채팅 Activity로 이동
         holder.itemView.setOnClickListener(view -> {
-            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            Intent intent = new Intent(context, ChatActivity.class);
             intent.putExtra("videoPath", item.path);
             context.startActivity(intent);
         });

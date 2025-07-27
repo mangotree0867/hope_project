@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Toast.makeText(this, "영상 촬영 완료", Toast.LENGTH_SHORT).show();
 
-                            VideoView videoView = findViewById(R.id.video_view);
-                            videoView.setVideoURI(videoUri); // 방금 촬영한 URI
-                            videoView.setVisibility(View.VISIBLE); // 화면에 보이게 하기
-                            videoView.start(); // 자동 재생
+                            // Navigate to ChatActivity with video path
+                            Intent chatIntent = new Intent(MainActivity.this, ChatActivity.class);
+                            chatIntent.putExtra("videoPath", videoUri.toString());
+                            startActivity(chatIntent);
                         }
                     }
             );
