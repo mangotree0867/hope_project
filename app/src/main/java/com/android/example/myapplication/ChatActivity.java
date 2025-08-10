@@ -55,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
     private ExecutorService executorService;
     private static final String PREF_CHAT_BG_COLOR = "chat_bg_color";
     private static final String PREF_HEADER_COLOR = "header_color";
+    private static final long MAX_VIDEO_SIZE_BYTES = 10 * 1024 * 1024; // 10MB in bytes
 
     // Callback interface for API response
     interface ApiCallback {
@@ -181,7 +182,20 @@ public class ChatActivity extends AppCompatActivity {
         // Get video binary data and send to server
         byte[] videoData = getVideoBinaryData(videoPath);
         if (videoData != null) {
-            Toast.makeText(this, "Uploading video (" + videoData.length + " bytes)...", Toast.LENGTH_SHORT).show();
+            // Check video size limit
+            if (videoData.length > MAX_VIDEO_SIZE_BYTES) {
+                hideTypingIndicator();
+                double videoSizeMB = videoData.length / (1024.0 * 1024.0);
+                String errorMsg = String.format("Video too large: %.1f MB. Maximum allowed size is 10 MB.", videoSizeMB);
+                messages.add(new ChatMessage("Error: " + errorMsg, ChatMessage.TYPE_BOT));
+                chatAdapter.notifyItemInserted(messages.size() - 1);
+                recyclerView.scrollToPosition(messages.size() - 1);
+                Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+                return;
+            }
+            
+            double videoSizeMB = videoData.length / (1024.0 * 1024.0);
+            Toast.makeText(this, String.format("Uploading video (%.1f MB)...", videoSizeMB), Toast.LENGTH_SHORT).show();
             sendVideoToServer(videoData, (response, error) -> {
                 // This callback runs on the main thread
                 hideTypingIndicator();
@@ -264,7 +278,7 @@ public class ChatActivity extends AppCompatActivity {
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                 connection.setConnectTimeout(10000); // 10 seconds connect timeout
-                connection.setReadTimeout(10000); // 10 seconds read timeout
+                connection.setReadTimeout(10000); // 10 secon`ds read timeout
                 
                 // Build multipart form data properly
                 StringBuilder formData = new StringBuilder();
