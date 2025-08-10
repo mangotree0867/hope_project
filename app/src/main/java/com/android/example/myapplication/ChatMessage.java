@@ -3,6 +3,7 @@ package com.android.example.myapplication;
 public class ChatMessage {
     public static final int TYPE_USER = 0;
     public static final int TYPE_BOT = 1;
+    public static final int TYPE_TYPING = 2;
 
     private String message;
     private int type;

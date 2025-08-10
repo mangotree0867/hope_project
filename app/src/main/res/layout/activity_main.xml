@@ -5,41 +5,138 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
     tools:context=".MainActivity">
 
-    <!-- 영상 출력 영역 -->
-    <VideoView
-        android:id="@+id/video_view"
+    <!-- App Title and Logo -->
+    <LinearLayout
+        android:id="@+id/header_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/button_container"
-        android:visibility="gone" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <!-- 버튼 컨테이너 - 화면 하단 고정 -->
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_launcher_foreground"
+            android:tint="@color/primary_red" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Sign Language Interpreter"
+            android:textColor="@color/text_primary"
+            android:textSize="28sp"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Communicate without barriers"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+    <!-- Video preview container with fancy border -->
+    <FrameLayout
+        android:id="@+id/video_container"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/header_container"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/video_preview_background"
+        android:visibility="gone">
+
+        <VideoView
+            android:id="@+id/video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp" />
+
+    </FrameLayout>
+
+    <!-- Main action buttons -->
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
+        android:layout_marginBottom="40dp"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:paddingHorizontal="32dp">
 
-        <Button
+        <!-- Record Video Button - Primary Red -->
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="영상 촬영" />
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/button_gradient_primary"
+            android:drawableLeft="@android:drawable/ic_menu_camera"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/white"
+            android:elevation="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Record Sign Language"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
-        <Button
+        <!-- Gallery Button - Secondary Purple -->
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button_gradient_secondary"
+            android:drawableLeft="@android:drawable/ic_menu_gallery"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/white"
+            android:elevation="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Browse Gallery"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <!-- Quick Tips -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="갤러리 보기" />
+            android:layout_marginTop="24dp"
+            android:text="Tip: Ensure good lighting for better recognition"
+            android:textColor="@color/accent_cyan"
+            android:textSize="14sp"
+            android:textAlignment="center" />
 
     </LinearLayout>
+
+    <!-- Decorative elements -->
+    <View
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="-50dp"
+        android:alpha="0.1"
+        android:background="@drawable/decorative_circle" />
+
+    <View
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="-75dp"
+        android:alpha="0.1"
+        android:background="@drawable/decorative_circle" />
 
 </RelativeLayout>

@@ -2,4 +2,65 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Primary Colors -->
+    <color name="primary_red">#FF3B3B</color>
+    <color name="primary_red_dark">#CC2E2E</color>
+    <color name="primary_red_light">#FF6B6B</color>
+    
+    <!-- Secondary Colors -->
+    <color name="secondary_purple">#7B61FF</color>
+    <color name="secondary_purple_dark">#5C47CC</color>
+    <color name="secondary_purple_light">#9B85FF</color>
+    
+    <!-- Background Colors -->
+    <color name="background_gradient_start">#1A1A2E</color>
+    <color name="background_gradient_end">#16213E</color>
+    <color name="surface_dark">#0F3460</color>
+    <color name="surface_card">#1F2937</color>
+    
+    <!-- Accent Colors -->
+    <color name="accent_orange">#FF6B35</color>
+    <color name="accent_pink">#FF4E88</color>
+    <color name="accent_cyan">#00D9FF</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_hint">#808080</color>
+    
+    <!-- Chat Colors -->
+    <color name="chat_user_bubble">#FFD700</color>
+    <color name="chat_user_bubble_dark">#FFC400</color>
+    <color name="chat_user_bubble_light">#FFE34A</color>
+    <color name="chat_bot_bubble">#2A2E3F</color>
+    <color name="chat_background">#0F1419</color>
+    
+    <!-- Chat Background Options -->
+    <color name="chat_bg_default">#0F1419</color>
+    <color name="chat_bg_midnight">#1A1A2E</color>
+    <color name="chat_bg_ocean">#0F3460</color>
+    <color name="chat_bg_forest">#1B3A2F</color>
+    <color name="chat_bg_purple">#2D1B69</color>
+    <color name="chat_bg_charcoal">#1C1C1C</color>
+    
+    <!-- Header Color Options -->
+    <color name="header_yellow">#FFD700</color>
+    <color name="header_yellow_dark">#FFC400</color>
+    <color name="header_red">#FF3B3B</color>
+    <color name="header_red_dark">#CC2E2E</color>
+    <color name="header_purple">#7B61FF</color>
+    <color name="header_purple_dark">#5C47CC</color>
+    <color name="header_cyan">#00D9FF</color>
+    <color name="header_cyan_dark">#00B8E6</color>
+    <color name="header_green">#4CAF50</color>
+    <color name="header_green_dark">#388E3C</color>
+    <color name="header_orange">#FF6B35</color>
+    <color name="header_orange_dark">#E55100</color>
+    
+    <!-- Button Gradient Colors -->
+    <color name="button_gradient_start">#FF3B3B</color>
+    <color name="button_gradient_end">#FF6B6B</color>
+    <color name="button_secondary_start">#7B61FF</color>
+    <color name="button_secondary_end">#9B85FF</color>
 </resources>

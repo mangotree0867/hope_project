@@ -9,13 +9,19 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.io.BufferedReader;
@@ -40,8 +46,15 @@ public class ChatActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private List<ChatMessage> messages;
     private Button btnAttachVideo;
+    private ImageButton btnColorPicker;
+    private ConstraintLayout chatRootLayout;
+    private LinearLayout toolbarContainer;
+    private TextView titleText, subtitleText;
+    private ImageView logoImage;
     private Uri videoUri;
     private ExecutorService executorService;
+    private static final String PREF_CHAT_BG_COLOR = "chat_bg_color";
+    private static final String PREF_HEADER_COLOR = "header_color";
 
     // Callback interface for API response
     interface ApiCallback {
@@ -80,6 +93,9 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         btnAttachVideo = findViewById(R.id.btnAttachVideo);
+        btnColorPicker = findViewById(R.id.btnColorPicker);
+        chatRootLayout = findViewById(R.id.chatRootLayout);
+        toolbarContainer = findViewById(R.id.toolbar_container);
         
         messages = new ArrayList<>();
         chatAdapter = new ChatAdapter(this, messages);
@@ -88,8 +104,14 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(chatAdapter);
 
+        // Load saved theme colors
+        loadSavedTheme();
+        
         // Set up video button
         btnAttachVideo.setOnClickListener(v -> showVideoOptions());
+        
+        // Set up theme picker button
+        btnColorPicker.setOnClickListener(v -> showThemePicker());
 
         // Get video path from intent
         String videoPath = getIntent().getStringExtra("videoPath");
@@ -153,12 +175,17 @@ public class ChatActivity extends AppCompatActivity {
         chatAdapter.notifyItemInserted(messages.size() - 1);
         recyclerView.scrollToPosition(messages.size() - 1);
 
+        // Show typing indicator
+        showTypingIndicator();
+
         // Get video binary data and send to server
         byte[] videoData = getVideoBinaryData(videoPath);
         if (videoData != null) {
             Toast.makeText(this, "Uploading video (" + videoData.length + " bytes)...", Toast.LENGTH_SHORT).show();
             sendVideoToServer(videoData, (response, error) -> {
                 // This callback runs on the main thread
+                hideTypingIndicator();
+                
                 String botMessage;
                 if (error != null) {
                     botMessage = "Error processing video: " + error;
@@ -172,6 +199,7 @@ public class ChatActivity extends AppCompatActivity {
             });
         } else {
             // If video data is null, show error message
+            hideTypingIndicator();
             messages.add(new ChatMessage("Error: Failed to read video file", ChatMessage.TYPE_BOT));
             chatAdapter.notifyItemInserted(messages.size() - 1);
             recyclerView.scrollToPosition(messages.size() - 1);
@@ -235,6 +263,8 @@ public class ChatActivity extends AppCompatActivity {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                connection.setConnectTimeout(10000); // 10 seconds connect timeout
+                connection.setReadTimeout(10000); // 10 seconds read timeout
                 
                 // Build multipart form data properly
                 StringBuilder formData = new StringBuilder();
@@ -316,6 +346,154 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void loadSavedTheme() {
+        // Load background color
+        int savedBgColor = getSharedPreferences("ChatPrefs", MODE_PRIVATE)
+                .getInt(PREF_CHAT_BG_COLOR, getResources().getColor(R.color.chat_bg_default));
+        chatRootLayout.setBackgroundColor(savedBgColor);
+        
+        // Load header color
+        int savedHeaderRes = getSharedPreferences("ChatPrefs", MODE_PRIVATE)
+                .getInt(PREF_HEADER_COLOR, R.drawable.header_gradient_yellow);
+        toolbarContainer.setBackgroundResource(savedHeaderRes);
+        
+        // Update text colors based on header
+        updateHeaderTextColors(savedHeaderRes);
+    }
+    
+    private void showThemePicker() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_theme_picker, null);
+        
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        
+        // Header color listeners
+        dialogView.findViewById(R.id.header_yellow).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_yellow);
+        });
+        
+        dialogView.findViewById(R.id.header_red).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_red);
+        });
+        
+        dialogView.findViewById(R.id.header_purple).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_purple);
+        });
+        
+        dialogView.findViewById(R.id.header_cyan).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_cyan);
+        });
+        
+        dialogView.findViewById(R.id.header_green).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_green);
+        });
+        
+        dialogView.findViewById(R.id.header_orange).setOnClickListener(v -> {
+            changeHeaderColor(R.drawable.header_gradient_orange);
+        });
+        
+        // Background color listeners
+        dialogView.findViewById(R.id.bg_default).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_default);
+        });
+        
+        dialogView.findViewById(R.id.bg_midnight).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_midnight);
+        });
+        
+        dialogView.findViewById(R.id.bg_ocean).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_ocean);
+        });
+        
+        dialogView.findViewById(R.id.bg_forest).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_forest);
+        });
+        
+        dialogView.findViewById(R.id.bg_purple).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_purple);
+        });
+        
+        dialogView.findViewById(R.id.bg_charcoal).setOnClickListener(v -> {
+            changeBackgroundColor(R.color.chat_bg_charcoal);
+        });
+        
+        dialog.show();
+    }
+    
+    private void changeBackgroundColor(int colorResId) {
+        int color = getResources().getColor(colorResId);
+        chatRootLayout.setBackgroundColor(color);
+        
+        // Save the selected color
+        getSharedPreferences("ChatPrefs", MODE_PRIVATE)
+                .edit()
+                .putInt(PREF_CHAT_BG_COLOR, color)
+                .apply();
+    }
+    
+    private void changeHeaderColor(int drawableResId) {
+        toolbarContainer.setBackgroundResource(drawableResId);
+        
+        // Save the selected header
+        getSharedPreferences("ChatPrefs", MODE_PRIVATE)
+                .edit()
+                .putInt(PREF_HEADER_COLOR, drawableResId)
+                .apply();
+        
+        // Update text colors based on header
+        updateHeaderTextColors(drawableResId);
+        
+        Toast.makeText(this, "Theme updated", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateHeaderTextColors(int headerDrawableRes) {
+        // Find text views in toolbar
+        TextView titleText = toolbarContainer.findViewById(R.id.toolbar_title);
+        TextView subtitleText = toolbarContainer.findViewById(R.id.toolbar_subtitle);
+        ImageView logoImage = toolbarContainer.findViewById(R.id.toolbar_logo);
+        
+        // Set colors based on header type
+        if (headerDrawableRes == R.drawable.header_gradient_yellow || 
+            headerDrawableRes == R.drawable.header_gradient_cyan) {
+            // Dark text for light backgrounds
+            int darkColor = 0xFF3D2914;
+            if (titleText != null) titleText.setTextColor(darkColor);
+            if (subtitleText != null) subtitleText.setTextColor(0xFF6B5D54);
+            if (logoImage != null) logoImage.setColorFilter(darkColor);
+            btnColorPicker.setColorFilter(darkColor);
+        } else {
+            // White text for dark backgrounds
+            if (titleText != null) titleText.setTextColor(getResources().getColor(R.color.white));
+            if (subtitleText != null) subtitleText.setTextColor(getResources().getColor(R.color.text_secondary));
+            if (logoImage != null) logoImage.setColorFilter(getResources().getColor(R.color.white));
+            btnColorPicker.setColorFilter(getResources().getColor(R.color.white));
+        }
+    }
+    
+    private void showTypingIndicator() {
+        runOnUiThread(() -> {
+            // Add typing indicator message
+            ChatMessage typingMessage = new ChatMessage("Thinking...", ChatMessage.TYPE_TYPING);
+            messages.add(typingMessage);
+            chatAdapter.notifyItemInserted(messages.size() - 1);
+            recyclerView.scrollToPosition(messages.size() - 1);
+        });
+    }
+    
+    private void hideTypingIndicator() {
+        runOnUiThread(() -> {
+            // Remove typing indicator message
+            for (int i = messages.size() - 1; i >= 0; i--) {
+                if (messages.get(i).getType() == ChatMessage.TYPE_TYPING) {
+                    messages.remove(i);
+                    chatAdapter.notifyItemRemoved(i);
+                    break;
+                }
+            }
+        });
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();

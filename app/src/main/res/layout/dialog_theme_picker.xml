@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@color/surface_card">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customize Chat Theme"
+            android:textSize="24sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Header Color Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Header Color"
+            android:textSize="18sp"
+            android:textColor="@color/accent_cyan"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <GridLayout
+            android:id="@+id/headerColorGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="2"
+            android:layout_marginBottom="24dp">
+
+            <!-- Yellow Header -->
+            <FrameLayout
+                android:id="@+id/header_yellow"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_yellow"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Yellow"
+                    android:textColor="#3D2914"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+            <!-- Red Header -->
+            <FrameLayout
+                android:id="@+id/header_red"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_red"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Red"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+            <!-- Purple Header -->
+            <FrameLayout
+                android:id="@+id/header_purple"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_purple"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Purple"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+            <!-- Cyan Header -->
+            <FrameLayout
+                android:id="@+id/header_cyan"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_cyan"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Cyan"
+                    android:textColor="#0F1419"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+            <!-- Green Header -->
+            <FrameLayout
+                android:id="@+id/header_green"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Green"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+            <!-- Orange Header -->
+            <FrameLayout
+                android:id="@+id/header_orange"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@drawable/header_gradient_orange"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Orange"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </FrameLayout>
+
+        </GridLayout>
+
+        <!-- Background Color Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Background Color"
+            android:textSize="18sp"
+            android:textColor="@color/accent_cyan"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <GridLayout
+            android:id="@+id/bgColorGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="2">
+
+            <!-- Default Dark -->
+            <FrameLayout
+                android:id="@+id/bg_default"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Default"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- Midnight Blue -->
+            <FrameLayout
+                android:id="@+id/bg_midnight"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_midnight"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Midnight"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- Ocean -->
+            <FrameLayout
+                android:id="@+id/bg_ocean"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_ocean"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Ocean"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- Forest -->
+            <FrameLayout
+                android:id="@+id/bg_forest"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_forest"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Forest"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- Purple -->
+            <FrameLayout
+                android:id="@+id/bg_purple"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_purple"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Purple"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- Charcoal -->
+            <FrameLayout
+                android:id="@+id/bg_charcoal"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="@color/chat_bg_charcoal"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Charcoal"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+        </GridLayout>
+
+    </LinearLayout>
+
+</ScrollView>

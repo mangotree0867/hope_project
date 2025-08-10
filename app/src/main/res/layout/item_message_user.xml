@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -11,22 +12,46 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/bg_message_user"
-        android:padding="12dp"
-        android:maxWidth="280dp">
+        android:padding="16dp"
+        android:maxWidth="280dp"
+        android:elevation="4dp">
 
-        <VideoView
-            android:id="@+id/videoView"
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="150dp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/video_overlay" />
+
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/textMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Video sent"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textColor="#3D2914"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/timeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Just now"
+            android:textColor="#6B5D54"
+            android:textSize="11sp" />
 
     </LinearLayout>
 
