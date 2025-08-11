@@ -66,6 +66,23 @@ public class MainActivity extends AppCompatActivity {
                     }
             );
 
+    // 갤러리 선택 처리 런처
+    private final ActivityResultLauncher<Intent> galleryLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                            Uri selectedVideo = result.getData().getData();
+                            if (selectedVideo != null) {
+                                // Navigate to ChatActivity with selected video
+                                Intent chatIntent = new Intent(MainActivity.this, ChatActivity.class);
+                                chatIntent.putExtra("videoPath", selectedVideo.toString());
+                                startActivity(chatIntent);
+                            }
+                        }
+                    }
+            );
+
     // onCreate: 초기 설정 및 버튼 이벤트 연결
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.btn_gallery).setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
-            startActivity(intent);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+            galleryLauncher.launch(intent);
         });
     }
 
