@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-medium"
-            android:text="Sign Language Interpreter"
+            android:text="수화 통역사"
             android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:textAlignment="center" />
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Communicate without barriers"
+            android:text="장벽 없이 소통하세요"
             android:textColor="@color/text_secondary"
             android:textSize="16sp"
             android:textAlignment="center" />
@@ -86,7 +86,7 @@
             android:drawableTint="@color/white"
             android:elevation="8dp"
             android:fontFamily="sans-serif-medium"
-            android:text="Record Sign Language"
+            android:text="수화 녹화하기"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="18sp" />
@@ -103,7 +103,7 @@
             android:drawableTint="@color/white"
             android:elevation="8dp"
             android:fontFamily="sans-serif-medium"
-            android:text="Browse Gallery"
+            android:text="갤러리 탐색"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="18sp" />
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Tip: Ensure good lighting for better recognition"
+            android:text="팁: 더 나은 인식을 위해 조명을 밝게 해주세요"
             android:textColor="@color/accent_cyan"
             android:textSize="14sp"
             android:textAlignment="center" />

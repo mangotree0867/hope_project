@@ -54,7 +54,7 @@
             android:id="@+id/textMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Video sent"
+            android:text="동영상 전송됨"
             android:textColor="#3D2914"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium" />
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Just now"
+            android:text="방금 전"
             android:textColor="#6B5D54"
             android:textSize="11sp" />
 

@@ -165,7 +165,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Failed to create video file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "동영상 파일 생성 실패", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -184,7 +184,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void handleVideoResult(String videoPath) {
         // Add user message with video
-        messages.add(new ChatMessage("Video sent", ChatMessage.TYPE_USER, videoPath));
+        messages.add(new ChatMessage("동영상 전송됨", ChatMessage.TYPE_USER, videoPath));
         chatAdapter.notifyItemInserted(messages.size() - 1);
         recyclerView.scrollToPosition(messages.size() - 1);
 
@@ -198,8 +198,8 @@ public class ChatActivity extends AppCompatActivity {
             if (videoData.length > MAX_VIDEO_SIZE_BYTES) {
                 hideTypingIndicator();
                 double videoSizeMB = videoData.length / (1024.0 * 1024.0);
-                String errorMsg = String.format("Video too large: %.1f MB. Maximum allowed size is 10 MB.", videoSizeMB);
-                messages.add(new ChatMessage("Error: " + errorMsg, ChatMessage.TYPE_BOT));
+                String errorMsg = String.format("동영상이 너무 큽니다: %.1f MB. 최대 허용 크기는 10 MB입니다.", videoSizeMB);
+                messages.add(new ChatMessage("오류: " + errorMsg, ChatMessage.TYPE_BOT));
                 chatAdapter.notifyItemInserted(messages.size() - 1);
                 recyclerView.scrollToPosition(messages.size() - 1);
                 Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
@@ -207,14 +207,14 @@ public class ChatActivity extends AppCompatActivity {
             }
             
             double videoSizeMB = videoData.length / (1024.0 * 1024.0);
-            Toast.makeText(this, String.format("Uploading video (%.1f MB)...", videoSizeMB), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format("동영상 업로드 중 (%.1f MB)...", videoSizeMB), Toast.LENGTH_SHORT).show();
             sendVideoToServer(videoData, (response, error) -> {
                 // This callback runs on the main thread
                 hideTypingIndicator();
                 
                 String botMessage;
                 if (error != null) {
-                    botMessage = "Error processing video: " + error;
+                    botMessage = "동영상 처리 오류: " + error;
                 } else {
                     botMessage = response;
                 }
@@ -226,7 +226,7 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             // If video data is null, show error message
             hideTypingIndicator();
-            messages.add(new ChatMessage("Error: Failed to read video file", ChatMessage.TYPE_BOT));
+            messages.add(new ChatMessage("오류: 동영상 파일 읽기 실패", ChatMessage.TYPE_BOT));
             chatAdapter.notifyItemInserted(messages.size() - 1);
             recyclerView.scrollToPosition(messages.size() - 1);
         }
@@ -235,9 +235,9 @@ public class ChatActivity extends AppCompatActivity {
     private String interpretSignLanguage(String videoPath) {
         // This is where you would integrate with your sign language interpretation API/model
         // For now, returning a placeholder response
-        return "I detected the following sign language gestures:\n\n" +
-               "\"Hello, how are you today?\"\n\n" +
-               "The signs were clear and the interpretation confidence is high.";
+        return "다음 수화 동작을 감지했습니다:\n\n" +
+               "\"안녕하세요, 오늘 어떻게 지내세요?\"\n\n" +
+               "수화 동작이 명확하며 통역 신뢰도가 높습니다.";
     }
 
     private byte[] getVideoBinaryData(String videoPath) {
@@ -269,7 +269,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Failed to read video file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "동영상 파일 읽기 실패", Toast.LENGTH_SHORT).show();
         }
         
         return null;
@@ -331,12 +331,12 @@ public class ChatActivity extends AppCompatActivity {
                     
                     // Handle success on the main thread
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Video processed successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "동영상 처리 성공", Toast.LENGTH_SHORT).show();
                         callback.onResult(responseBody, null);
                     });
                 } else {
                     // Handle error response
-                    String errorMessage = "Server error (code " + responseCode + ")";
+                    String errorMessage = "서버 오류 (코드 " + responseCode + ")";
                     try {
                         InputStream errorStream = connection.getErrorStream();
                         if (errorStream != null) {
@@ -350,12 +350,12 @@ public class ChatActivity extends AppCompatActivity {
                             errorMessage += ": " + errorResponse.toString();
                         }
                     } catch (Exception errorException) {
-                        errorMessage += ": Unable to read error details";
+                        errorMessage += ": 오류 세부사항을 읽을 수 없음";
                     }
                     
                     final String finalErrorMessage = errorMessage;
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Upload failed: " + responseCode, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "업로드 실패: " + responseCode, Toast.LENGTH_SHORT).show();
                         callback.onResult(null, finalErrorMessage);
                     });
                 }
@@ -363,7 +363,7 @@ public class ChatActivity extends AppCompatActivity {
                 connection.disconnect();
             } catch (Exception e) {
                 e.printStackTrace();
-                String errorMessage = "Network error: " + e.getMessage();
+                String errorMessage = "네트워크 오류: " + e.getMessage();
                 runOnUiThread(() -> {
                     Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
                     callback.onResult(null, errorMessage);
@@ -470,7 +470,7 @@ public class ChatActivity extends AppCompatActivity {
         // Update text colors based on header
         updateHeaderTextColors(drawableResId);
         
-        Toast.makeText(this, "Theme updated", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "테마 업데이트됨", Toast.LENGTH_SHORT).show();
     }
     
     private void updateHeaderTextColors(int headerDrawableRes) {
@@ -500,7 +500,7 @@ public class ChatActivity extends AppCompatActivity {
     private void showTypingIndicator() {
         runOnUiThread(() -> {
             // Add typing indicator message
-            ChatMessage typingMessage = new ChatMessage("Thinking...", ChatMessage.TYPE_TYPING);
+            ChatMessage typingMessage = new ChatMessage("생각 중...", ChatMessage.TYPE_TYPING);
             messages.add(typingMessage);
             chatAdapter.notifyItemInserted(messages.size() - 1);
             recyclerView.scrollToPosition(messages.size() - 1);

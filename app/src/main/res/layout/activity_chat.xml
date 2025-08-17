@@ -44,7 +44,7 @@
                     android:id="@+id/toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sign Language Chat"
+                    android:text="수화 채팅"
                     android:textColor="#3D2914"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-medium" />
@@ -53,7 +53,7 @@
                     android:id="@+id/toolbar_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI-Powered Interpretation"
+                    android:text="AI 기반 통역"
                     android:textColor="#6B5D54"
                     android:textSize="14sp" />
 
@@ -66,7 +66,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_menu_preferences"
                 android:tint="#3D2914"
-                android:contentDescription="Change background color" />
+                android:contentDescription="배경 색상 변경" />
 
         </LinearLayout>
 
@@ -117,7 +117,7 @@
                     android:drawableTint="@color/white"
                     android:paddingStart="28dp"
                     android:paddingEnd="28dp"
-                    android:text="Send Video"
+                    android:text="동영상 전송"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textAllCaps="false"

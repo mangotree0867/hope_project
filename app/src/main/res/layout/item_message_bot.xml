@@ -31,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AI Assistant"
+                android:text="AI 비서"
                 android:textColor="@color/accent_cyan"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium" />
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Just now"
+            android:text="방금 전"
             android:textColor="@color/text_secondary"
             android:textSize="11sp" />
 

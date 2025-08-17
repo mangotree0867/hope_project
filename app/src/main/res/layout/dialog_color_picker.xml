@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose Chat Background"
+        android:text="채팅 배경 선택"
         android:textSize="20sp"
         android:textColor="@color/text_primary"
         android:fontFamily="sans-serif-medium"
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Default"
+                android:text="기본"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Midnight"
+                android:text="자정"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Ocean"
+                android:text="바다"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Forest"
+                android:text="숲"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Purple"
+                android:text="보라"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -137,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Charcoal"
+                android:text="차콜"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </FrameLayout>
