@@ -122,18 +122,30 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void showVideoOptions() {
-        // Show dialog to choose between camera and gallery
-        String[] options = {"Record Video", "Choose from Gallery"};
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Select Video")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        recordVideo();
-                    } else {
-                        openGallery();
-                    }
-                })
-                .show();
+        // Create custom dialog with matching chat design
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_video_options, null);
+        
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        
+        // Set up button listeners
+        dialogView.findViewById(R.id.option_record).setOnClickListener(v -> {
+            dialog.dismiss();
+            recordVideo();
+        });
+        
+        dialogView.findViewById(R.id.option_gallery).setOnClickListener(v -> {
+            dialog.dismiss();
+            openGallery();
+        });
+        
+        dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        
+        dialog.show();
     }
 
     private void recordVideo() {

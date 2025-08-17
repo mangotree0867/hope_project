@@ -1,17 +1,19 @@
 package com.android.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.MediaController;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.VideoView;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.os.Handler;
 import java.util.List;
 
@@ -54,25 +56,41 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             userHolder.textMessage.setText(message.getMessage());
             
             if (message.getVideoPath() != null) {
-                userHolder.videoView.setVisibility(View.VISIBLE);
-                Uri videoUri = Uri.parse(message.getVideoPath());
-                userHolder.videoView.setVideoURI(videoUri);
+                userHolder.videoContainer.setVisibility(View.VISIBLE);
                 
-                // Add media controller for video playback
-                MediaController mediaController = new MediaController(context);
-                mediaController.setAnchorView(userHolder.videoView);
-                userHolder.videoView.setMediaController(mediaController);
-                
-                // Start video playback on click
-                userHolder.videoView.setOnClickListener(v -> {
-                    if (userHolder.videoView.isPlaying()) {
-                        userHolder.videoView.pause();
+                // Generate and set video thumbnail
+                try {
+                    Bitmap thumbnail = null;
+                    String videoPath = message.getVideoPath();
+                    
+                    if (videoPath.startsWith("content://")) {
+                        // Handle content URI (from gallery)
+                        Uri videoUri = Uri.parse(videoPath);
+                        thumbnail = ThumbnailUtils.createVideoThumbnail(
+                            getRealPathFromURI(videoUri), MediaStore.Images.Thumbnails.MINI_KIND);
                     } else {
-                        userHolder.videoView.start();
+                        // Handle file path (from camera)
+                        thumbnail = ThumbnailUtils.createVideoThumbnail(
+                            videoPath, MediaStore.Images.Thumbnails.MINI_KIND);
                     }
+                    
+                    if (thumbnail != null) {
+                        userHolder.videoThumbnail.setImageBitmap(thumbnail);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Set a placeholder if thumbnail generation fails
+                    userHolder.videoThumbnail.setImageResource(R.drawable.ic_launcher_foreground);
+                }
+                
+                // Set click listener to open video player
+                userHolder.videoContainer.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, VideoPlayerActivity.class);
+                    intent.putExtra("videoPath", message.getVideoPath());
+                    context.startActivity(intent);
                 });
             } else {
-                userHolder.videoView.setVisibility(View.GONE);
+                userHolder.videoContainer.setVisibility(View.GONE);
             }
         } else if (holder instanceof BotViewHolder) {
             BotViewHolder botHolder = (BotViewHolder) holder;
@@ -90,12 +108,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView textMessage;
-        VideoView videoView;
+        CardView videoContainer;
+        ImageView videoThumbnail;
 
         UserViewHolder(View itemView) {
             super(itemView);
             textMessage = itemView.findViewById(R.id.textMessage);
-            videoView = itemView.findViewById(R.id.videoView);
+            videoContainer = itemView.findViewById(R.id.videoContainer);
+            videoThumbnail = itemView.findViewById(R.id.videoThumbnail);
         }
     }
 
@@ -143,5 +163,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         handler.postDelayed(() -> {
             animateTypingDots(holder);
         }, 1200);
+    }
+    
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        android.database.Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 }
