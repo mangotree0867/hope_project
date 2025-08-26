@@ -31,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AI 비서"
+                android:text="수어 번역 모델"
                 android:textColor="@color/accent_cyan"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium" />

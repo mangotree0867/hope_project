@@ -10,23 +10,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.io.File;
 import java.util.ArrayList;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+    private final Context context; // inflate / startActivity 용 컨텍스트
+    private final ArrayList<VideoItem> videoList; // 표시할 동영상 데이터(이름/경로)
 
-    private final Context context;
-    private final ArrayList<VideoItem> videoList;
-
+    // 생성자
     public VideoAdapter(Context context, ArrayList<VideoItem> videoList) {
         this.context = context;
         this.videoList = videoList;
     }
 
+    // 뷰홀더 생성
     @NonNull
     @Override
     public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,18 +32,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         return new VideoViewHolder(view);
     }
 
+    // 데이터 바인딩
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
         VideoItem item = videoList.get(position);
         holder.name.setText(item.name);
-
         // 썸네일 생성
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(
                 item.path,
                 MediaStore.Video.Thumbnails.MINI_KIND
         );
         holder.thumbnail.setImageBitmap(thumb);
-
         // 클릭하면 채팅 Activity로 이동
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ChatActivity.class);
@@ -54,15 +51,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         });
     }
 
+    // 아이템 개수
     @Override
     public int getItemCount() {
         return videoList.size();
     }
 
+    // 뷰홀더
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail;
         TextView name;
-
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnail = itemView.findViewById(R.id.thumbnail);

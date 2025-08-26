@@ -5,66 +5,38 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"
     tools:context=".MainActivity">
 
-    <!-- App Title and Logo -->
+    <!-- 앱 제목 -->
     <LinearLayout
         android:id="@+id/header_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="110dp"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp">
-
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:tint="@color/primary_red" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-medium"
-            android:text="수화 통역사"
+            android:text="산수화 (SL Partner)"
             android:textColor="@color/text_primary"
-            android:textSize="28sp"
-            android:textAlignment="center" />
+            android:textSize="36sp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="장벽 없이 소통하세요"
+            android:text="긴급상황 수어 번역 서비스"
+            android:textAlignment="center"
             android:textColor="@color/text_secondary"
-            android:textSize="16sp"
-            android:textAlignment="center" />
-
+            android:textSize="20sp" />
     </LinearLayout>
 
-    <!-- Video preview container with fancy border -->
-    <FrameLayout
-        android:id="@+id/video_container"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_below="@id/header_container"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/video_preview_background"
-        android:visibility="gone">
-
-        <VideoView
-            android:id="@+id/video_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="2dp" />
-
-    </FrameLayout>
-
-    <!-- Main action buttons -->
+    <!-- 버튼 -->
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="match_parent"
@@ -75,7 +47,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="32dp">
 
-        <!-- Record Video Button - Primary Red -->
+        <!-- 녹화하기 버튼 -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_video"
             android:layout_width="match_parent"
@@ -91,7 +63,7 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
 
-        <!-- Gallery Button - Secondary Purple -->
+        <!-- 갤러리 탐색 버튼 -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_gallery"
             android:layout_width="match_parent"
@@ -108,7 +80,7 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
 
-        <!-- Quick Tips -->
+        <!-- 팁 문구 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -119,24 +91,4 @@
             android:textAlignment="center" />
 
     </LinearLayout>
-
-    <!-- Decorative elements -->
-    <View
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="-50dp"
-        android:alpha="0.1"
-        android:background="@drawable/decorative_circle" />
-
-    <View
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="-75dp"
-        android:alpha="0.1"
-        android:background="@drawable/decorative_circle" />
-
 </RelativeLayout>

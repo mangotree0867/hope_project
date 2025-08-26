@@ -7,26 +7,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.View;
 import android.widget.Toast;
-import android.widget.VideoView;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
-    // 영상 저장 임시 경로
-    private String videoFilePath;
     private Uri videoUri;
 
     // 카메라 권한 요청 런처
@@ -131,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         File video = File.createTempFile(
                 videoFileName, ".mp4", storageDir
         );
-        videoFilePath = video.getAbsolutePath();
         return video;
     }
 
