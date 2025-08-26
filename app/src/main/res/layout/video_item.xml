@@ -11,7 +11,7 @@
         android:layout_width="100dp"
         android:layout_height="80dp"
         android:scaleType="centerCrop"
-        android:contentDescription="썸네일" />
+        android:contentDescription="썸네일1" />
 
     <TextView
         android:id="@+id/video_name"
