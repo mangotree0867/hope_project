@@ -232,13 +232,6 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private String interpretSignLanguage(String videoPath) {
-        // This is where you would integrate with your sign language interpretation API/model
-        // For now, returning a placeholder response
-        return "다음 수화 동작을 감지했습니다:\n\n" +
-               "\"안녕하세요, 오늘 어떻게 지내세요?\"\n\n" +
-               "수화 동작이 명확하며 통역 신뢰도가 높습니다.";
-    }
 
     private byte[] getVideoBinaryData(String videoPath) {
         try {
@@ -278,9 +271,9 @@ public class ChatActivity extends AppCompatActivity {
     private void sendVideoToServer(byte[] videoData, ApiCallback callback) {
         executorService.execute(() -> {
             try {
-                URL url = new URL("http://192.168.98.63:8000/process_video");
+                URL url = new URL("http://192.168.34.63:8000/predict-video");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                
+
                 // Generate a proper boundary
                 String boundary = "----FormBoundary" + System.currentTimeMillis();
                 String LINE_FEED = "\r\n";
@@ -289,8 +282,8 @@ public class ChatActivity extends AppCompatActivity {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-                connection.setConnectTimeout(10000); // 10 seconds connect timeout
-                connection.setReadTimeout(10000); // 10 secon`ds read timeout
+                connection.setConnectTimeout(30000); // 30 seconds connect timeout
+                connection.setReadTimeout(30000); // 30 seconds read timeout
                 
                 // Build multipart form data properly
                 StringBuilder formData = new StringBuilder();
