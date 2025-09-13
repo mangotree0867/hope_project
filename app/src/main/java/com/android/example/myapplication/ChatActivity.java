@@ -282,6 +282,7 @@ public class ChatActivity extends AppCompatActivity {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                connection.setRequestProperty("Authorization", "Bearer ACCESS_TOKEN");
                 connection.setConnectTimeout(30000); // 30 seconds connect timeout
                 connection.setReadTimeout(30000); // 30 seconds read timeout
                 
