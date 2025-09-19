@@ -190,7 +190,12 @@ public class ChatActivity extends AppCompatActivity {
                 loadMessagesForSession(currentSessionId);
             } else {
                 loadLatestSessionAndMessages();
+                // Show welcome popup for new chat
+                showNewChatDialog();
             }
+        } else if (isGuest) {
+            // Show welcome popup for guest users starting a new chat
+            showNewChatDialog();
         }
         TextView tvUserChat = findViewById(R.id.tv_user_name_chat);
         String token   = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
@@ -1196,6 +1201,79 @@ public class ChatActivity extends AppCompatActivity {
                     }).start();
                 })
                 .addOnFailureListener(e -> tvLocation.setText("위치 확인 불가"));
+    }
+
+    private void showNewChatDialog() {
+        // Inflate custom layout
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_selection, null);
+
+        // Create dialog with custom view
+        AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        // Remove dim background completely
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setDimAmount(0f);
+            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        // Set back button listener
+        ImageButton btnBack = dialogView.findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish(); // Go back to chat list
+        });
+
+        // Set click listeners for each category button
+        LinearLayout btnFire = dialogView.findViewById(R.id.btn_fire);
+        LinearLayout btnCity = dialogView.findViewById(R.id.btn_city);
+        LinearLayout btnExternalInjury = dialogView.findViewById(R.id.btn_external_injury);
+        LinearLayout btnInternalInjury = dialogView.findViewById(R.id.btn_internal_injury);
+
+        btnFire.setOnClickListener(v -> {
+            // Save selected category
+            getSharedPreferences("chat_session", MODE_PRIVATE)
+                    .edit()
+                    .putString("category_" + currentSessionId, "화재상황")
+                    .apply();
+            Toast.makeText(this, "화재상황 선택됨", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        btnCity.setOnClickListener(v -> {
+            // Save selected category
+            getSharedPreferences("chat_session", MODE_PRIVATE)
+                    .edit()
+                    .putString("category_" + currentSessionId, "도심상황")
+                    .apply();
+            Toast.makeText(this, "도심상황 선택됨", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        btnExternalInjury.setOnClickListener(v -> {
+            // Save selected category
+            getSharedPreferences("chat_session", MODE_PRIVATE)
+                    .edit()
+                    .putString("category_" + currentSessionId, "외상")
+                    .apply();
+            Toast.makeText(this, "외상 선택됨", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        btnInternalInjury.setOnClickListener(v -> {
+            // Save selected category
+            getSharedPreferences("chat_session", MODE_PRIVATE)
+                    .edit()
+                    .putString("category_" + currentSessionId, "내상")
+                    .apply();
+            Toast.makeText(this, "내상 선택됨", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void startEmergencyCall() {
