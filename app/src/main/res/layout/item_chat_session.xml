@@ -1,21 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:padding="12dp"
-    android:layout_width="match_parent" android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/session_item_background"
+    android:padding="16dp"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    android:elevation="2dp">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
+    <!-- Header with session info and time -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="내용 요약"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
 
-    <TextView
-        android:id="@+id/tv_meta"
-        android:textSize="12sp"
-        android:textColor="#888888"
-        android:layout_width="wrap_content"
+        <!-- Session icon -->
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_dialog_email"
+            android:tint="#7EC097"
+            android:layout_marginEnd="12dp"/>
+
+        <!-- Session title -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="수어 번역 세션"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+
+        <!-- Time badge -->
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2시간 전"
+            android:textSize="11sp"
+            android:textColor="#AAAAAA"
+            android:background="#2A2A2A"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"/>
+    </LinearLayout>
+
+    <!-- Location and message count info -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="09/19 오전 02:32 노원구"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Location -->
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@android:drawable/ic_dialog_map"
+            android:tint="#666666"
+            android:layout_marginEnd="6dp"/>
+
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="위치 정보 없음"
+            android:textSize="12sp"
+            android:textColor="#AAAAAA"/>
+
+        <!-- Message count -->
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@android:drawable/ic_dialog_info"
+            android:tint="#666666"
+            android:layout_marginEnd="6dp"
+            android:layout_marginStart="12dp"/>
+
+        <TextView
+            android:id="@+id/tv_message_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5개 메시지"
+            android:textSize="12sp"
+            android:textColor="#AAAAAA"/>
+    </LinearLayout>
+
+    <!-- Subtle separator line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#333333"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Last message preview -->
+    <TextView
+        android:id="@+id/tv_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="마지막 메시지 미리보기..."
+        android:textSize="13sp"
+        android:textColor="#BBBBBB"
+        android:layout_marginTop="8dp"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 </LinearLayout>

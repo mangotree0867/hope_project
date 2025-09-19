@@ -11,20 +11,71 @@
         android:id="@+id/header_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@color/black"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#7EC097"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/tv_user_name_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:contentDescription="Settings"
+            android:layout_gravity="center_vertical"
+            android:tint="@color/black" />
+    </LinearLayout>
+
+    <!-- Empty state message (shown when no sessions) -->
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="32dp"
+        app:layout_constraintTop_toBottomOf="@id/header_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_new_chat">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@android:drawable/ic_dialog_email"
+            android:tint="#444444"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:text="아직 대화 기록이 없습니다"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="새 채팅을 시작해 AI와 수어 번역을 시작해보세요"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:textAlignment="center"/>
     </LinearLayout>
 
     <!-- 세션 목록 -->
@@ -33,23 +84,25 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="80dp"
         app:layout_constraintTop_toBottomOf="@id/header_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- 새채팅 버튼 (모양/위치 그대로 유지) -->
+    <!-- 새채팅 버튼 (floating style) -->
     <Button
         android:id="@+id/btn_new_chat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="+"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
         android:backgroundTint="#7EC097"
-        android:text="새채팅"
-        android:textAllCaps="false"
-        android:layout_margin="16dp"
+        android:elevation="6dp"
+        android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

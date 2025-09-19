@@ -28,9 +28,8 @@ public class SignupActivity extends AppCompatActivity {
         Button btnDoSignup = findViewById(R.id.btn_do_signup);
         TextView tvError = findViewById(R.id.tv_signup_error);
 
-// [ADD] 서버 베이스 URL (LoginActivity와 동일한 IP로 맞추세요)
-// 에뮬레이터: "http://10.0.2.2:8000", 물리기기: "http://<PC_IP>:8000"
-        final String BASE_URL = "http://192.168.137.1:8000";  // 예시
+        // [ADD] 서버 베이스 URL (AppConfig에서 중앙 관리)
+        final String BASE_URL = AppConfig.BASE_URL;
 
         btnDoSignup.setOnClickListener(v -> {
             tvError.setVisibility(View.GONE);

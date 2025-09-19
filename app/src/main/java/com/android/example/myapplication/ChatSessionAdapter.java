@@ -46,20 +46,34 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
     public void onBindViewHolder(@NonNull VH h, int pos) {
         ChatSession session = sessions.get(pos);
 
-        // 1) 제목: "요약내용" 고정
-        h.tvTitle.setText("요약내용");
+        // Title
+        h.tvTitle.setText("수어 번역 세션 #" + session.getId());
 
-        // 시간 포맷
+        // Time formatting - more user friendly
         long ts = parseSessionCreatedAtMillis(session.getCreatedAt());
-        String when = new java.text.SimpleDateFormat("MM/dd a hh:mm", java.util.Locale.KOREA)
-                .format(new java.util.Date(ts));
+        String timeAgo = getTimeAgoString(ts);
+        h.tvTime.setText(timeAgo);
 
-        // 주소(시·구·동까지) – ChatActivity에서 저장한 값
+        // Location
         String addr = session.getAddress();
-        if (addr == null || addr.isEmpty()) addr = "위치정보 없음";
+        if (addr == null || addr.isEmpty()) {
+            h.tvLocation.setText("위치 정보 없음");
+        } else {
+            h.tvLocation.setText(addr);
+        }
 
-        h.tvMeta.setText(when + " 📍" + addr);
-        // ✅ 클릭 리스너 연결
+        // Message count
+        int messageCount = session.getMessageCount();
+        if (messageCount > 0) {
+            h.tvMessageCount.setText(messageCount + "개 메시지");
+        } else {
+            h.tvMessageCount.setText("새 세션");
+        }
+
+        // Last message preview (placeholder for now)
+        h.tvPreview.setText("AI 수어 번역 대화를 시작하거나 계속할 수 있습니다.");
+
+        // Click listener
         h.itemView.setOnClickListener(v -> {
             if (onItemClick != null) {
                 onItemClick.onClick(session);
@@ -70,11 +84,14 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
     @Override public int getItemCount() { return sessions.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvMeta;
+        TextView tvTitle, tvTime, tvLocation, tvMessageCount, tvPreview;
         VH(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tv_title);
-            tvMeta  = itemView.findViewById(R.id.tv_meta);
+            tvTime = itemView.findViewById(R.id.tv_time);
+            tvLocation = itemView.findViewById(R.id.tv_location);
+            tvMessageCount = itemView.findViewById(R.id.tv_message_count);
+            tvPreview = itemView.findViewById(R.id.tv_preview);
         }
     }
 
@@ -99,5 +116,26 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
             } catch (Throwable ignore) {}
         }
         return System.currentTimeMillis();
+    }
+
+    private String getTimeAgoString(long timestamp) {
+        long now = System.currentTimeMillis();
+        long diff = now - timestamp;
+
+        if (diff < 60 * 1000) { // Less than 1 minute
+            return "방금 전";
+        } else if (diff < 60 * 60 * 1000) { // Less than 1 hour
+            long minutes = diff / (60 * 1000);
+            return minutes + "분 전";
+        } else if (diff < 24 * 60 * 60 * 1000) { // Less than 1 day
+            long hours = diff / (60 * 60 * 1000);
+            return hours + "시간 전";
+        } else if (diff < 7 * 24 * 60 * 60 * 1000) { // Less than 1 week
+            long days = diff / (24 * 60 * 60 * 1000);
+            return days + "일 전";
+        } else {
+            // Show actual date for older sessions
+            return new SimpleDateFormat("MM/dd", Locale.KOREA).format(new Date(timestamp));
+        }
     }
 }

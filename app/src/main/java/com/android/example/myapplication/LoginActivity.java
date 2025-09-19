@@ -29,8 +29,8 @@ public class LoginActivity extends AppCompatActivity {
         Button btnSignup = findViewById(R.id.btn_signup);
         TextView tvError = findViewById(R.id.tv_error);
 
-        // [ADD] 서버 베이스 URL (에뮬레이터면 http://10.0.2.2:8000 사용)
-        final String BASE_URL = "http://192.168.137.1:8000";
+        // [ADD] 서버 베이스 URL (AppConfig에서 중앙 관리)
+        final String BASE_URL = AppConfig.BASE_URL;
 
         // [ADD] 로그인 버튼 클릭
         btnLoginConfirm.setOnClickListener(v -> {

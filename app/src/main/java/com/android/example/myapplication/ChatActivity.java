@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final long MAX_VIDEO_SIZE_BYTES = 10 * 1024 * 1024; // 10MB in bytes
     private boolean isGuest = false;
     private String authToken = "";
-    private static final String BASE_URL = "http://192.168.137.1:8000";
+    private static final String BASE_URL = AppConfig.BASE_URL;
     // [ADD] 현재 세션 ID (0이면 아직 미지정 → 첫 업로드 시 생성됨)
     private int currentSessionId = 0;
     // [ADD] 메시지 로딩 가드
@@ -83,9 +83,7 @@ public class ChatActivity extends AppCompatActivity {
     private Double lastLng = null;
     private String lastAddress = null; // "서울시 강남구 대치동" 같은 표시 문자열
     private ActivityResultLauncher<String> callPermissionLauncher;
-    private String emergencyNumber = "01059101260"; // ⚠️ 테스트용 번호. 실제는 "119"
-
-    private String lastDate = "";
+    private String emergencyNumber = "112"; // Default emergency number
     private static final String PREF_SESSION_META = "session_meta";
 
     // Callback interface for API response
@@ -131,6 +129,9 @@ public class ChatActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_chat);
 
+        // Load emergency number from settings
+        emergencyNumber = SettingsActivity.getEmergencyNumber(this);
+
         // 1) 권한 요청 런처 등록
         callPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -151,7 +152,7 @@ public class ChatActivity extends AppCompatActivity {
                 androidx.appcompat.app.AlertDialog dialog =
                         new androidx.appcompat.app.AlertDialog.Builder(this)
                                 .setTitle("긴급전화")
-                                .setMessage("119에 전화하시겠습니까?")
+                                .setMessage(emergencyNumber + "에 전화하시겠습니까?")
                                 .setNegativeButton("취소", (d, w) -> d.dismiss())
                                 .setPositiveButton("긴급전화", (d, w) -> {
                                     // 권한 체크 → 없으면 요청, 있으면 바로 통화
@@ -618,7 +619,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     try {
                         org.json.JSONObject resp = new org.json.JSONObject(responseBody);
-                        final String assistantText = resp.optString("message", "");
+                        final String assistantText = resp.optString("sentence", "");
                         final int sid = resp.optInt("session_id", 0);
 
                         runOnUiThread(() -> {

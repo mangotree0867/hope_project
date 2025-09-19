@@ -2,7 +2,10 @@ package com.android.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +25,10 @@ public class ChatListActivity extends AppCompatActivity {
 
     private ChatSessionAdapter adapter;
     private String authToken = "";
-    private static final String BASE_URL = "http://192.168.137.1:8000";
+    private static final String BASE_URL = AppConfig.BASE_URL;
     private volatile boolean isLoadingSessions = false;
+    private LinearLayout emptyState;
+    private RecyclerView rvSessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +56,11 @@ public class ChatListActivity extends AppCompatActivity {
 
         authToken = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
 
-        RecyclerView rv = findViewById(R.id.rv_sessions);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        // Initialize views
+        rvSessions = findViewById(R.id.rv_sessions);
+        emptyState = findViewById(R.id.empty_state);
+
+        rvSessions.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ChatSessionAdapter(
                 /* context = */ this,
                 /* onClick  = */ session -> {
@@ -62,17 +70,25 @@ public class ChatListActivity extends AppCompatActivity {
             startActivity(intent);
         }
         );
-        rv.setAdapter(adapter);
-        // [ADD] 아이템 간 구분선 추가
-        DividerItemDecoration divider = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        divider.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider_line));
-        rv.addItemDecoration(divider);
+        rvSessions.setAdapter(adapter);
+
+        // Remove divider decoration for cleaner look
+        // DividerItemDecoration divider = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        // divider.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider_line));
+        // rv.addItemDecoration(divider);
 
         Button btnNew = findViewById(R.id.btn_new_chat);
         btnNew.setOnClickListener(v -> {
             // 새 세션 시작
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             intent.putExtra("isGuest", false);
+            startActivity(intent);
+        });
+
+        ImageButton btnSettings = findViewById(R.id.btn_settings);
+        btnSettings.setOnClickListener(v -> {
+            // Navigate to settings page
+            Intent intent = new Intent(ChatListActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
     }
@@ -119,7 +135,10 @@ public class ChatListActivity extends AppCompatActivity {
                         session.setAddress(savedAddr);
                         list.add(session);
                     }
-                    runOnUiThread(() -> adapter.setSessions(list));
+                    runOnUiThread(() -> {
+                        adapter.setSessions(list);
+                        updateEmptyState(list.isEmpty());
+                    });
                 } else {
                     runOnUiThread(() -> Toast.makeText(this, "채팅 목록 실패(" + code + ")", Toast.LENGTH_SHORT).show());
                 }
@@ -130,5 +149,15 @@ public class ChatListActivity extends AppCompatActivity {
                 isLoadingSessions = false;
             }
         }).start();
+    }
+
+    private void updateEmptyState(boolean isEmpty) {
+        if (isEmpty) {
+            emptyState.setVisibility(View.VISIBLE);
+            rvSessions.setVisibility(View.GONE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+            rvSessions.setVisibility(View.VISIBLE);
+        }
     }
 }

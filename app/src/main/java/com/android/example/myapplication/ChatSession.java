@@ -20,6 +20,7 @@ public class ChatSession {
 
     public int getId() { return id; }
     public String getCreatedAt() { return created_at; }
+    public int getMessageCount() { return message_count; }
     // [ADD]
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }

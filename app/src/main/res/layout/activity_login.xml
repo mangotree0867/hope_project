@@ -5,57 +5,101 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#121212"
-    android:padding="24dp">
+    android:gravity="center"
+    android:padding="32dp">
 
-    <TextView
-        android:id="@+id/tv_login_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="로그인"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
-
-    <EditText
-        android:id="@+id/et_id"
+    <!-- App Logo/Title Section -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="아이디"
-        android:inputType="text"
-        android:layout_marginBottom="12dp"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="48dp">
 
-    <EditText
-        android:id="@+id/et_password"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수어천사"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="#7EC097"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_login_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그인"
+            android:textSize="18sp"
+            android:textColor="#AAAAAA"/>
+    </LinearLayout>
+
+    <!-- Input Fields Container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="비밀번호"
-        android:inputType="textPassword"
-        android:layout_marginBottom="24dp"/>
+        android:orientation="vertical"
+        android:background="#1E1E1E"
+        android:padding="24dp"
+        android:elevation="4dp">
 
-    <TextView
-        android:id="@+id/tv_error"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#D32F2F"
-        android:textSize="14sp"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"
-        android:text="아이디 또는 비밀번호가 올바르지 않습니다."/>
+        <EditText
+            android:id="@+id/et_id"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="아이디"
+            android:textColorHint="#666666"
+            android:textColor="@color/white"
+            android:inputType="text"
+            android:background="#2A2A2A"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
 
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="비밀번호"
+            android:textColorHint="#666666"
+            android:textColor="@color/white"
+            android:inputType="textPassword"
+            android:background="#2A2A2A"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF6B6B"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="아이디 또는 비밀번호가 올바르지 않습니다."/>
+    </LinearLayout>
+
+    <!-- Buttons -->
     <Button
         android:id="@+id/btn_login_confirm"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="로그인"
         android:backgroundTint="#7EC097"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textAllCaps="false"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="12dp"/>
 
     <Button
         android:id="@+id/btn_signup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="회원가입"
-        android:backgroundTint="#7EC097"
+        android:backgroundTint="#333333"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         android:textAllCaps="false"/>
 </LinearLayout>

@@ -5,58 +5,98 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#121212"
-    android:padding="24dp">
+    android:gravity="center"
+    android:padding="32dp">
 
-    <!-- 앱 로고 -->
-    <ImageView
-        android:id="@+id/main_logo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/main_logo"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="100dp"/>
-
-    <!-- 앱 타이틀 -->
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="응급상황 수어해석 앱"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:layout_gravity="center_horizontal"/>
-
-    <!-- 사용자명 표시 -->
-    <TextView
-        android:id="@+id/tv_user_name_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="계정명"
-        android:textSize="14sp"
-        android:textColor="#BBBBBB"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="6dp"/>
-
-    <!-- 로그인 버튼 -->
-    <Button
-        android:id="@+id/btn_login"
+    <!-- App Logo Container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="로그인"
-        android:textAllCaps="false"
-        android:backgroundTint="#7EC097"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="60dp"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="48dp">
 
-    <!-- 게스트 버튼 -->
-    <Button
-        android:id="@+id/btn_guest"
+        <!-- 앱 로고 -->
+        <ImageView
+            android:id="@+id/main_logo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/main_logo"
+            android:contentDescription="@string/app_name"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- 앱 타이틀 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수어천사"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:textColor="#7EC097"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="응급상황 수어해석 서비스"
+            android:textSize="16sp"
+            android:textColor="#AAAAAA"
+            android:layout_gravity="center_horizontal"/>
+
+        <!-- 사용자명 표시 -->
+        <TextView
+            android:id="@+id/tv_user_name_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="#7EC097"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- Buttons Container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#7EC097"
-        android:text="게스트로 시작"
-        android:textAllCaps="false"/>
+        android:orientation="vertical"
+        android:background="#1E1E1E"
+        android:padding="24dp"
+        android:elevation="4dp">
+
+        <!-- 로그인 버튼 -->
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="로그인"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#7EC097"
+            android:textColor="@color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- 게스트 버튼 -->
+        <Button
+            android:id="@+id/btn_guest"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#333333"
+            android:text="게스트로 시작"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+
+    <!-- Bottom Info Text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="긴급 상황시 즉시 이용 가능합니다"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:layout_marginTop="24dp"/>
 </LinearLayout>
