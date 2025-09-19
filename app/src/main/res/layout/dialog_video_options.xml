@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:layout_gravity="center">
+
+    <!-- Dialog Header -->
+    <LinearLayout
+        android:id="@+id/dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7EC097"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전송 방법 선택"
+            android:textColor="#3D2914"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Message -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="동영상 전송 방법을 선택하세요"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="20dp" />
+
+    <!-- Buttons - Stacked Vertically -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="16dp">
+
+        <!-- Record Video Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/option_record"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/button_gradient_primary"
+            android:drawableLeft="@android:drawable/ic_menu_camera"
+            android:drawableTint="@color/white"
+            android:drawablePadding="12dp"
+            android:text="직접 촬영"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Gallery Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/option_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/button_gradient_secondary"
+            android:drawableLeft="@android:drawable/ic_menu_gallery"
+            android:drawableTint="@color/white"
+            android:drawablePadding="12dp"
+            android:text="갤러리에서 선택"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+    <!-- Cancel Button -->
+    <TextView
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="취소"
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+</LinearLayout>
