@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:text="저장"
             android:textAllCaps="false"
-            android:backgroundTint="#7EC097"
+            android:backgroundTint="#FFB03B"
             android:textColor="@color/black" />
     </LinearLayout>
 

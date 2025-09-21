@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#121212"
+    android:background="@android:color/white"
     android:gravity="center"
     android:padding="32dp">
 
@@ -21,7 +21,7 @@
             android:id="@+id/main_logo"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/main_logo"
+            android:src="@drawable/white_logo_start_page"
             android:contentDescription="@string/app_name"
             android:layout_marginBottom="24dp"/>
 
@@ -32,7 +32,7 @@
             android:text="수어천사"
             android:textSize="42sp"
             android:textStyle="bold"
-            android:textColor="#7EC097"
+            android:textColor="#FFB03B"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:text=""
             android:textSize="14sp"
-            android:textColor="#7EC097"
+            android:textColor="#FFB03B"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:visibility="gone"/>
@@ -75,7 +75,7 @@
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="#7EC097"
+            android:backgroundTint="#FFB03B"
             android:textColor="@color/black"
             android:layout_marginBottom="12dp"/>
 

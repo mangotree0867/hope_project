@@ -228,7 +228,7 @@ public class ChatActivity extends AppCompatActivity {
         TextView tvLocation = findViewById(R.id.toolbar_subtitle);
 
         int FIXED_BG = android.graphics.Color.parseColor("#121212");   // 채팅 배경
-        int FIXED_HEADER = android.graphics.Color.parseColor("#7EC097"); // 헤더(상단바) 배경
+        int FIXED_HEADER = android.graphics.Color.parseColor("#FFB03B"); // 헤더(상단바) 배경
 
         chatRootLayout.setBackgroundColor(FIXED_BG);
         toolbarContainer.setBackgroundColor(FIXED_HEADER);

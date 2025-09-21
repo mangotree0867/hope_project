@@ -12,7 +12,7 @@
         android:id="@+id/dialog_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#7EC097"
+        android:background="#FFB03B"
         android:orientation="vertical"
         android:padding="20dp">
 

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:background="#7EC097"
+        android:background="#FFB03B"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -100,7 +100,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:backgroundTint="#7EC097"
+        android:backgroundTint="#FFB03B"
         android:elevation="6dp"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
