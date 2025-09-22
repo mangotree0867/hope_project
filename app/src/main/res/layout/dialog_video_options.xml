@@ -37,6 +37,46 @@
         android:gravity="center"
         android:padding="20dp" />
 
+    <!-- Context Input Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상황 설명 (선택사항)"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/edit_context"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/edittext_background"
+            android:hint="예: 골절 다리, 화상 팔, 연기 흡입 등"
+            android:textColorHint="#888888"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:gravity="top|start"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLength="100" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="구체적인 상황을 입력하면 더 정확한 수어 번역을 받을 수 있습니다"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
     <!-- Buttons - Stacked Vertically -->
     <LinearLayout
         android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package com.android.example.myapplication;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,6 +14,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -374,28 +376,43 @@ public class ChatActivity extends AppCompatActivity {
     private void showVideoOptions() {
         // Create custom dialog with matching chat design
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_video_options, null);
-        
+
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
-        
+
+        EditText editContext = dialogView.findViewById(R.id.edit_context);
+
         // Set up button listeners
         dialogView.findViewById(R.id.option_record).setOnClickListener(v -> {
+            // Save context before proceeding
+            String context = editContext.getText().toString().trim();
+            saveContextForSession(context);
             dialog.dismiss();
             recordVideo();
         });
-        
+
         dialogView.findViewById(R.id.option_gallery).setOnClickListener(v -> {
+            // Save context before proceeding
+            String context = editContext.getText().toString().trim();
+            saveContextForSession(context);
             dialog.dismiss();
             openGallery();
         });
-        
+
         dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
             dialog.dismiss();
         });
-        
+
         dialog.show();
+    }
+
+    private void saveContextForSession(String context) {
+        getSharedPreferences("chat_session", MODE_PRIVATE)
+                .edit()
+                .putString("context_" + currentSessionId, context)
+                .apply();
     }
 
     private void recordVideo() {
@@ -585,15 +602,36 @@ public class ChatActivity extends AppCompatActivity {
                 connection.setConnectTimeout(30000); // 30 seconds connect timeout
                 connection.setReadTimeout(30000); // 30 seconds read timeout
                 
+                // Get selected category and context
+                SharedPreferences prefs = getSharedPreferences("chat_session", MODE_PRIVATE);
+                String selectedCategory = prefs.getString("category_" + currentSessionId, "");
+                String userContext = prefs.getString("context_" + currentSessionId, "");
+
                 // Build multipart form data properly
                 StringBuilder formData = new StringBuilder();
+
+                // Add category field if available
+                if (!selectedCategory.isEmpty()) {
+                    formData.append("--").append(boundary).append(LINE_FEED);
+                    formData.append("Content-Disposition: form-data; name=\"category\"").append(LINE_FEED);
+                    formData.append(LINE_FEED);
+                    formData.append(selectedCategory).append(LINE_FEED);
+                }
+
+                // Add context field (user input or empty)
+                formData.append("--").append(boundary).append(LINE_FEED);
+                formData.append("Content-Disposition: form-data; name=\"context\"").append(LINE_FEED);
+                formData.append(LINE_FEED);
+                formData.append(userContext).append(LINE_FEED);
+
+                // Add file field
                 formData.append("--").append(boundary).append(LINE_FEED);
                 formData.append("Content-Disposition: form-data; name=\"file\"; filename=\"video.mp4\"").append(LINE_FEED);
                 formData.append("Content-Type: application/octet-stream").append(LINE_FEED);
                 formData.append(LINE_FEED);
-                
+
                 String formDataEnd = LINE_FEED + "--" + boundary + "--" + LINE_FEED;
-                
+
                 byte[] startBytes = formData.toString().getBytes("UTF-8");
                 byte[] endBytes = formDataEnd.getBytes("UTF-8");
                 
@@ -1237,7 +1275,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "화재상황")
+                    .putString("category_" + currentSessionId, "FIRE_SITUATION")
                     .apply();
             Toast.makeText(this, "화재상황 선택됨", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
@@ -1247,7 +1285,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "도심상황")
+                    .putString("category_" + currentSessionId, "URBAN_SITUATION")
                     .apply();
             Toast.makeText(this, "도심상황 선택됨", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
@@ -1257,7 +1295,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "외상")
+                    .putString("category_" + currentSessionId, "TRAUMA")
                     .apply();
             Toast.makeText(this, "외상 선택됨", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
@@ -1267,7 +1305,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "내상")
+                    .putString("category_" + currentSessionId, "INTERNAL_INJURY")
                     .apply();
             Toast.makeText(this, "내상 선택됨", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
