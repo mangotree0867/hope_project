@@ -339,63 +339,6 @@ public class ChatActivity extends AppCompatActivity {
             handleVideoResult(videoPath);
         }
 
-        // [ADD] 위치 권한 런처 등록
-        locationPermLauncher = registerForActivityResult(
-                new androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions(),
-                result -> {
-                    Boolean fine = result.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false);
-                    Boolean coarse = result.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                    if (Boolean.TRUE.equals(fine) || Boolean.TRUE.equals(coarse)) {
-                        updateLocationSubtitle();   // 권한 허용 → 위치 표시
-                    } else {
-                        if (toolbarSubtitle != null) toolbarSubtitle.setText("위치 권한 거부됨");
-                    }
-                }
-        );
-        // [ADD] 진입 시 위치 갱신 시도
-        updateLocationSubtitle();
-
-        // 위치 권한 체크 및 가져오기
-        FusedLocationProviderClient fusedLocationClient =
-                LocationServices.getFusedLocationProviderClient(this);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            // 권한 없으면 요청
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
-        } else {
-            // 권한 있으면 즉시 위치 요청
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        if (location != null) {
-                            lastLat = location.getLatitude();
-                            lastLng = location.getLongitude();
-
-                            new Thread(() -> {
-                                String displayAddress = buildShortKoreanAddress(lastLat, lastLng);
-                                runOnUiThread(() -> {
-                                    if (displayAddress == null || displayAddress.isEmpty()) {
-                                        toolbarSubtitle.setText("위치 확인 불가");
-                                    } else {
-                                        toolbarSubtitle.setText(displayAddress); // 서울시 강남구 대치동
-                                        lastAddress = displayAddress;
-                                        if (currentSessionId > 0) {
-                                            getSharedPreferences(PREF_SESSION_META, MODE_PRIVATE)
-                                                    .edit()
-                                                    .putString("session_" + currentSessionId + "_address", displayAddress)
-                                                    .apply();
-                                        }
-                                    }
-                                });
-                            }).start();
-                        }
-                    });
-        }
-
         // Show category selection dialog if needed
         if (needsCategorySelection) {
             // Post to ensure UI is fully initialized
@@ -1239,150 +1182,6 @@ public class ChatActivity extends AppCompatActivity {
         return out;
     }
 
-    // [ADD] 위치 권한 체크 → 마지막 위치 얻기 → 역지오코딩 → 서브타이틀 세팅
-    private void updateLocationSubtitle() {
-        if (toolbarSubtitle == null) return;
-
-        // 권한 체크
-        boolean hasFine = androidx.core.content.ContextCompat.checkSelfPermission(
-                this, android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-
-        boolean hasCoarse = androidx.core.content.ContextCompat.checkSelfPermission(
-                this, android.Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-
-        if (!hasFine && !hasCoarse) {
-            // 권한 요청
-            locationPermLauncher.launch(new String[]{
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-            });
-            return;
-        }
-
-        // 마지막 위치 시도 (LocationManager 사용: 추가 의존성 불필요)
-        try {
-            android.location.LocationManager lm =
-                    (android.location.LocationManager) getSystemService(android.content.Context.LOCATION_SERVICE);
-
-            android.location.Location loc = null;
-            if (hasFine) {
-                loc = lm.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
-            }
-            if (loc == null) {
-                loc = lm.getLastKnownLocation(android.location.LocationManager.NETWORK_PROVIDER);
-            }
-
-            if (loc == null) {
-                // 즉시 얻지 못하면 간단히 네트워크 프로바이더로 1회 요청(타임아웃 대용)
-                lm.requestSingleUpdate(android.location.LocationManager.NETWORK_PROVIDER, new android.location.LocationListener() {
-                    @Override public void onLocationChanged(@NonNull android.location.Location location) {
-                        resolveAndSetAddress(location.getLatitude(), location.getLongitude());
-                    }
-                    @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
-                    @Override public void onProviderEnabled(@NonNull String provider) {}
-                    @Override public void onProviderDisabled(@NonNull String provider) {}
-                }, null);
-                if (toolbarSubtitle != null) toolbarSubtitle.setText("위치 탐색 중…");
-            } else {
-                resolveAndSetAddress(loc.getLatitude(), loc.getLongitude());
-            }
-        } catch (Throwable t) {
-            if (toolbarSubtitle != null) toolbarSubtitle.setText("위치 확인 불가");
-        }
-    }
-
-    // [ADD] 위/경도 → 주소 문자열(시/구/동)로 변환 후 서브타이틀 세팅
-    private void resolveAndSetAddress(double lat, double lon) {
-        if (toolbarSubtitle == null) return;
-
-        geoExecutor.execute(() -> {
-            String label = "위치 확인 불가";
-            try {
-                if (Geocoder.isPresent()) {
-                    Geocoder geocoder = new Geocoder(this, Locale.KOREAN);
-                    List<Address> list = geocoder.getFromLocation(lat, lon, 1);
-                    if (list != null && !list.isEmpty()) {
-                        Address a = list.get(0);
-                        String full = addressLineWithoutCountry(a);
-                        if (full != null && !full.isEmpty()) {
-                            label = full;  // ← 대한민국만 뺀 전체 주소 그대로!
-                        }
-                    }
-                } else {
-                    label = "지오코더 미지원 기기";
-                }
-            } catch (Throwable ignore) {}
-
-            final String finalLabel = label;
-            runOnUiThread(() -> {
-                if (toolbarSubtitle != null) toolbarSubtitle.setText(finalLabel);
-            });
-        });
-    }
-
-    private String buildShortKoreanAddress(double lat, double lng) {
-        try {
-            java.util.Locale locale = java.util.Locale.KOREA;
-            android.location.Geocoder g = new android.location.Geocoder(this, locale);
-            java.util.List<android.location.Address> list = g.getFromLocation(lat, lng, 1);
-            if (list == null || list.isEmpty()) return null;
-            android.location.Address a = list.get(0);
-
-            android.util.Log.d(
-                    "ADDR",
-                    "admin=" + a.getAdminArea()
-                            + ", subAdmin=" + a.getSubAdminArea()
-                            + ", locality=" + a.getLocality()
-                            + ", subLocality=" + a.getSubLocality()
-                            + ", thoroughfare=" + a.getThoroughfare()
-                            + ", feature=" + a.getFeatureName()
-                            + ", line0=" + a.getAddressLine(0)
-            );
-
-            // 시/도
-            String siDo = safe(a.getAdminArea());         // 예: 서울특별시/경기도
-            // 구/군(지역에 따라 subLocality 또는 subAdminArea에 있음)
-            String guGun = safe(a.getSubLocality());
-            if (guGun.isEmpty()) guGun = safe(a.getSubAdminArea()); // fallback
-            // 동/로
-            String dongRo = safe(a.getThoroughfare());    // 예: 대치동/테헤란로
-
-            // 일부 단말에서는 thoroughfare가 빈 값인 경우, featureName이 "OO동"으로 오는 케이스도 존재
-            if (dongRo.isEmpty()) {
-                String feat = safe(a.getFeatureName());
-                if (feat.endsWith("동") || feat.endsWith("로") || feat.endsWith("가")) dongRo = feat;
-            }
-
-            // 필요한 최소 단위는 "시/도 구/군 동"
-            String joined = joinNonEmpty(siDo, guGun, dongRo);
-            if (!joined.isEmpty()) return joined;
-
-            // 실패 시 locality(시/군/구)라도
-            String loc = safe(a.getLocality());
-            if (!loc.isEmpty()) return loc;
-
-            // 최후: 전체주소(길어질 수 있음)
-            String line0 = safe(a.getAddressLine(0));
-            return line0.isEmpty() ? null : line0;
-        } catch (Exception ignore) {
-            return null;
-        }
-    }
-
-    private static String safe(String s) { return s == null ? "" : s.trim(); }
-    private static String joinNonEmpty(String... parts) {
-        StringBuilder sb = new StringBuilder();
-        for (String p : parts) {
-            if (p != null && !p.trim().isEmpty()) {
-                if (sb.length() > 0) sb.append(' ');
-                sb.append(p.trim());
-            }
-        }
-        return sb.toString();
-    }
-
     /** AddressLine(0)에서 '대한민국' 접두만 제거한 전체 주소를 돌려줌 */
     private static String addressLineWithoutCountry(Address a) {
         String s = a == null ? "" : (a.getAddressLine(0) == null ? "" : a.getAddressLine(0).trim());
@@ -1605,10 +1404,16 @@ public class ChatActivity extends AppCompatActivity {
 
                         // Update location if available
                         if (!locationInfo.isEmpty()) {
-                            lastAddress = locationInfo;
-                            TextView tvLocation = findViewById(R.id.toolbar_subtitle);
-                            if (tvLocation != null) {
-                                tvLocation.setText(locationInfo);
+                            String cur = toolbarSubtitle != null && toolbarSubtitle.getText()!=null
+                                    ? toolbarSubtitle.getText().toString() : "";
+                            boolean isFallback = cur.isEmpty()
+                                    || cur.contains("불가")
+                                    || cur.contains("탐색")
+                                    || cur.contains("불러오는 중");
+
+                            if (isFallback) {
+                                lastAddress = locationInfo;
+                                if (toolbarSubtitle != null) toolbarSubtitle.setText(locationInfo);
                             }
                         }
                     });
