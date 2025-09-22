@@ -219,7 +219,7 @@ public class ChatListActivity extends AppCompatActivity {
                 conn.setReadTimeout(10000);
 
                 // Create JSON body
-                String jsonBody = "{\"title\":\"" + newTitle.replace("\"", "\\\"") + "\"}";
+                String jsonBody = "{\"session_title\":\"" + newTitle.replace("\"", "\\\"") + "\"}";
 
                 try (OutputStream os = conn.getOutputStream()) {
                     os.write(jsonBody.getBytes("UTF-8"));
