@@ -248,21 +248,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         }
-        TextView tvUserChat = findViewById(R.id.tv_user_name_chat);
-        String token   = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
-        String name    = getSharedPreferences("auth", MODE_PRIVATE).getString("user_name", "");
-        String loginId = getSharedPreferences("auth", MODE_PRIVATE).getString("login_id", "");
-        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
-
-        String display;
-        if (token != null && !token.isEmpty() && !isGuest) {
-            display = (name != null && !name.isEmpty()) ? name
-                    : (loginId != null && !loginId.isEmpty()) ? loginId
-                    : "알 수 없음";
-        } else {
-            display = "게스트";
-        }
-        if (tvUserChat != null) tvUserChat.setText("유저명: " + display);
         authToken = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
 
         // 로그인 상태면 가장 최신 세션과 메시지 로딩
@@ -971,7 +956,18 @@ public class ChatActivity extends AppCompatActivity {
                     org.json.JSONObject res = new org.json.JSONObject(sb.toString());
                     org.json.JSONArray sessions = res.getJSONArray("sessions");
                     if (sessions.length() > 0) {
-                        int sessionId = sessions.getJSONObject(0).getInt("id"); // 가장 최근 세션
+                        org.json.JSONObject latestSession = sessions.getJSONObject(0);
+                        int sessionId = latestSession.getInt("id"); // 가장 최근 세션
+                        String sessionTitle = latestSession.optString("session_title", "수어 채팅");
+
+                        // UI 스레드에서 제목 업데이트
+                        runOnUiThread(() -> {
+                            TextView titleText = findViewById(R.id.toolbar_title);
+                            if (titleText != null) {
+                                titleText.setText(sessionTitle);
+                            }
+                        });
+
                         loadMessagesForSession(sessionId);
                     }
                 }
@@ -1599,16 +1595,24 @@ public class ChatActivity extends AppCompatActivity {
 
                     org.json.JSONObject sessionData = new org.json.JSONObject(response.toString());
                     String locationInfo = sessionData.optString("location", "");
+                    String sessionTitle = sessionData.optString("session_title", "수어 채팅");
 
-                    if (!locationInfo.isEmpty()) {
-                        runOnUiThread(() -> {
+                    runOnUiThread(() -> {
+                        // Update session title
+                        TextView titleText = findViewById(R.id.toolbar_title);
+                        if (titleText != null) {
+                            titleText.setText(sessionTitle);
+                        }
+
+                        // Update location if available
+                        if (!locationInfo.isEmpty()) {
                             lastAddress = locationInfo;
                             TextView tvLocation = findViewById(R.id.toolbar_subtitle);
                             if (tvLocation != null) {
                                 tvLocation.setText(locationInfo);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
                 connection.disconnect();
             } catch (Exception e) {
