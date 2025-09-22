@@ -1328,7 +1328,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "FIRE_SITUATION")
+                    .putString("category_" + currentSessionId, "화재상황")
                     .apply();
             Toast.makeText(this, "화재상황 선택됨", Toast.LENGTH_SHORT).show();
             // Restore button visibility and show content
@@ -1346,7 +1346,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "URBAN_SITUATION")
+                    .putString("category_" + currentSessionId, "도심상황")
                     .apply();
             Toast.makeText(this, "도심상황 선택됨", Toast.LENGTH_SHORT).show();
             // Restore button visibility and show content
@@ -1364,7 +1364,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "TRAUMA")
+                    .putString("category_" + currentSessionId, "외상")
                     .apply();
             Toast.makeText(this, "외상 선택됨", Toast.LENGTH_SHORT).show();
             // Restore button visibility and show content
@@ -1382,7 +1382,7 @@ public class ChatActivity extends AppCompatActivity {
             // Save selected category
             getSharedPreferences("chat_session", MODE_PRIVATE)
                     .edit()
-                    .putString("category_" + currentSessionId, "INTERNAL_INJURY")
+                    .putString("category_" + currentSessionId, "내상")
                     .apply();
             Toast.makeText(this, "내상 선택됨", Toast.LENGTH_SHORT).show();
             // Restore button visibility and show content
