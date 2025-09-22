@@ -61,12 +61,12 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
         String timeAgo = getTimeAgoString(ts);
         h.tvTime.setText(timeAgo);
 
-        // Location
-        String addr = session.getAddress();
-        if (addr == null || addr.isEmpty()) {
+        // Location - use server location
+        String location = session.getLocation();
+        if (location == null || location.isEmpty()) {
             h.tvLocation.setText("위치 정보 없음");
         } else {
-            h.tvLocation.setText(addr);
+            h.tvLocation.setText(location);
         }
 
         // Message count

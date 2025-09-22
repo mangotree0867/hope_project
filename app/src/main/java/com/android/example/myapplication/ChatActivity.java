@@ -64,6 +64,7 @@ public class ChatActivity extends AppCompatActivity {
     private Uri videoUri;
     private ExecutorService executorService;
     private static final long MAX_VIDEO_SIZE_BYTES = 100 * 1024 * 1024; // 100MB in bytes
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private boolean isGuest = false;
     private String authToken = "";
     private static final String BASE_URL = AppConfig.BASE_URL;
@@ -98,8 +99,14 @@ public class ChatActivity extends AppCompatActivity {
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
+                        android.util.Log.d("ChatActivity", "Video capture result: " + result.getResultCode());
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            android.util.Log.d("ChatActivity", "Video captured successfully");
                             handleVideoResult(videoUri.toString());
+                        } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                            android.util.Log.d("ChatActivity", "Video capture canceled");
+                            // Don't finish the activity, just show a message
+                            Toast.makeText(this, "동영상 촬영이 취소되었습니다", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -114,6 +121,23 @@ public class ChatActivity extends AppCompatActivity {
                             if (selectedVideo != null) {
                                 handleVideoResult(selectedVideo.toString());
                             }
+                        }
+                    }
+            );
+
+    // Camera permission launcher
+    private final ActivityResultLauncher<String> cameraPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            android.util.Log.d("ChatActivity", "Camera permission granted");
+                            // Permission granted, proceed with recording
+                            proceedWithVideoRecording();
+                        } else {
+                            android.util.Log.d("ChatActivity", "Camera permission denied");
+                            // Permission denied, show alert to guide user
+                            showCameraPermissionDeniedAlert();
                         }
                     }
             );
@@ -415,6 +439,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // Set up button listeners
         dialogView.findViewById(R.id.option_record).setOnClickListener(v -> {
+            android.util.Log.d("ChatActivity", "Record video button clicked");
             // Save context before proceeding
             String context = editContext.getText().toString().trim();
             saveContextForSession(context);
@@ -445,24 +470,56 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void recordVideo() {
+        android.util.Log.d("ChatActivity", "recordVideo() called");
+
+        // Check camera permission first
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            android.util.Log.d("ChatActivity", "Camera permission not granted, requesting...");
+
+            // Check if we should show rationale
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA)) {
+                // User has previously denied permission, show explanation
+                showCameraPermissionRationale();
+            } else {
+                // Request permission
+                cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+            }
+        } else {
+            // Permission already granted, proceed with video recording
+            proceedWithVideoRecording();
+        }
+    }
+
+    private void proceedWithVideoRecording() {
+        android.util.Log.d("ChatActivity", "proceedWithVideoRecording() called");
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             try {
                 File videoFile = createVideoFile();
+                android.util.Log.d("ChatActivity", "Video file created: " + (videoFile != null ? videoFile.getAbsolutePath() : "null"));
                 if (videoFile != null) {
                     videoUri = FileProvider.getUriForFile(
                             getApplicationContext(),
                             getPackageName() + ".fileprovider",
                             videoFile
                     );
+                    android.util.Log.d("ChatActivity", "Video URI: " + videoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
                     intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    android.util.Log.d("ChatActivity", "Launching video capture intent");
                     videoCaptureLauncher.launch(intent);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "동영상 파일 생성 실패", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "카메라 실행 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "카메라 앱을 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -476,6 +533,67 @@ public class ChatActivity extends AppCompatActivity {
         String videoFileName = "SIGN_" + timeStamp;
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
         return File.createTempFile(videoFileName, ".mp4", storageDir);
+    }
+
+    private void showCameraPermissionRationale() {
+        // Create custom dialog with matching chat design
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_permission, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Set dialog background to transparent to show custom background
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        // Handle button clicks
+        dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialog.dismiss();
+            Toast.makeText(this, "카메라 권한이 없으면 동영상을 촬영할 수 없습니다", Toast.LENGTH_LONG).show();
+        });
+
+        dialogView.findViewById(R.id.btn_request).setOnClickListener(v -> {
+            dialog.dismiss();
+            cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+        });
+
+        dialog.show();
+    }
+
+    private void showCameraPermissionDeniedAlert() {
+        // Create custom dialog with matching chat design
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_permission_denied, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)  // Force user to make a choice
+                .create();
+
+        // Set dialog background to transparent to show custom background
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        // Handle button clicks
+        dialogView.findViewById(R.id.btn_settings).setOnClickListener(v -> {
+            dialog.dismiss();
+            // Open app settings
+            Intent intent = new Intent();
+            intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        });
+
+        dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialog.dismiss();
+            Toast.makeText(this, "카메라 권한이 없으면 동영상을 촬영할 수 없습니다", Toast.LENGTH_LONG).show();
+        });
+
+        dialog.show();
     }
 
     private void handleVideoResult(String videoPath) {
@@ -1459,8 +1577,42 @@ public class ChatActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        android.util.Log.d("ChatActivity", "onResume called");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                proceedWithVideoRecording();
+            } else {
+                // Permission denied
+                showCameraPermissionDeniedAlert();
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        android.util.Log.d("ChatActivity", "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        android.util.Log.d("ChatActivity", "onStop called");
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        android.util.Log.d("ChatActivity", "onDestroy called");
         if (executorService != null) {
             executorService.shutdown();
         }

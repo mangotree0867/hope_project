@@ -6,6 +6,7 @@ public class ChatSession {
     private int message_count;
     private String address;
     private String session_title;
+    private String location;
 
     public ChatSession(int id, String created_at, int message_count) {
         this.id = id;
@@ -27,4 +28,6 @@ public class ChatSession {
     public void setAddress(String address) { this.address = address; }
     public String getTitle() { return session_title; }
     public void setTitle(String title) { this.session_title = title; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 }

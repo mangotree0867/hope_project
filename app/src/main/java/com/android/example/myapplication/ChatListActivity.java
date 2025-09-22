@@ -136,8 +136,14 @@ public class ChatListActivity extends AppCompatActivity {
                         String created = s.optString("created_at", "");
                         int count = s.optInt("message_count", 0);
                         String sessionTitle = s.optString("session_title", "");
+                        String location = null;
+                        if (s.has("location") && !s.isNull("location")) {
+                            location = s.getString("location");
+                        }
                         ChatSession session = new ChatSession(id, created, count);
                         session.setTitle(sessionTitle);
+                        session.setLocation(location);
+                        // Keep address for backward compatibility if needed
                         String savedAddr = getSharedPreferences("session_meta", MODE_PRIVATE)
                                 .getString("addr_" + id, "");
                         session.setAddress(savedAddr);
