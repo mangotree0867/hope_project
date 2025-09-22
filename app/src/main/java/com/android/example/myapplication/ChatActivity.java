@@ -372,28 +372,16 @@ public class ChatActivity extends AppCompatActivity {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-                            double lat = location.getLatitude();
-                            double lng = location.getLongitude();
-                            lastLat = lat;
-                            lastLng = lng;
+                            lastLat = location.getLatitude();
+                            lastLng = location.getLongitude();
 
-                            // 주소 변환
-                            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                            try {
-                                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-                                if (addresses != null && !addresses.isEmpty()) {
-                                    String displayAddress = addresses.get(0).getSubLocality(); // 동까지
+                            new Thread(() -> {
+                                String displayAddress = buildShortKoreanAddress(lastLat, lastLng);
+                                runOnUiThread(() -> {
                                     if (displayAddress == null || displayAddress.isEmpty()) {
-                                        displayAddress = addresses.get(0).getLocality(); // 구
-                                    }
-                                    if (tvLocation != null) {
-                                        tvLocation.setText(displayAddress);
-                                        if (currentSessionId > 0 && displayAddress != null && !displayAddress.isEmpty()) {
-                                            getSharedPreferences("session_meta", MODE_PRIVATE)
-                                                    .edit()
-                                                    .putString("addr_" + currentSessionId, displayAddress)
-                                                    .apply();
-                                        }
+                                        toolbarSubtitle.setText("위치 확인 불가");
+                                    } else {
+                                        toolbarSubtitle.setText(displayAddress); // 서울시 강남구 대치동
                                         lastAddress = displayAddress;
                                         if (currentSessionId > 0) {
                                             getSharedPreferences(PREF_SESSION_META, MODE_PRIVATE)
@@ -402,10 +390,8 @@ public class ChatActivity extends AppCompatActivity {
                                                     .apply();
                                         }
                                     }
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                                });
+                            }).start();
                         }
                     });
         }
@@ -1314,23 +1300,14 @@ public class ChatActivity extends AppCompatActivity {
         geoExecutor.execute(() -> {
             String label = "위치 확인 불가";
             try {
-                if (android.location.Geocoder.isPresent()) {
-                    android.location.Geocoder geocoder = new android.location.Geocoder(this, java.util.Locale.KOREAN);
-                    java.util.List<android.location.Address> list = geocoder.getFromLocation(lat, lon, 1);
+                if (Geocoder.isPresent()) {
+                    Geocoder geocoder = new Geocoder(this, Locale.KOREAN);
+                    List<Address> list = geocoder.getFromLocation(lat, lon, 1);
                     if (list != null && !list.isEmpty()) {
-                        android.location.Address a = list.get(0);
-                        // 행정 구역 조합 (지역별 반환 필드 차이를 최대한 흡수)
-                        String siDo   = safe(a.getAdminArea());        // 서울특별시/경기도...
-                        String siGunGu= firstNonEmpty(safe(a.getSubAdminArea()), safe(a.getLocality())); // 강남구/수원시 등
-                        String dong   = firstNonEmpty(safe(a.getSubLocality()), safe(a.getThoroughfare()), safe(a.getFeatureName())); // 대치동/XX로/지번 등
-
-                        java.util.ArrayList<String> parts = new java.util.ArrayList<>();
-                        if (!siDo.isEmpty()) parts.add(siDo);
-                        if (!siGunGu.isEmpty()) parts.add(siGunGu);
-                        if (!dong.isEmpty()) parts.add(dong);
-
-                        if (!parts.isEmpty()) {
-                            label = android.text.TextUtils.join(" ", parts);
+                        Address a = list.get(0);
+                        String full = addressLineWithoutCountry(a);
+                        if (full != null && !full.isEmpty()) {
+                            label = full;  // ← 대한민국만 뺀 전체 주소 그대로!
                         }
                     }
                 } else {
@@ -1352,6 +1329,17 @@ public class ChatActivity extends AppCompatActivity {
             java.util.List<android.location.Address> list = g.getFromLocation(lat, lng, 1);
             if (list == null || list.isEmpty()) return null;
             android.location.Address a = list.get(0);
+
+            android.util.Log.d(
+                    "ADDR",
+                    "admin=" + a.getAdminArea()
+                            + ", subAdmin=" + a.getSubAdminArea()
+                            + ", locality=" + a.getLocality()
+                            + ", subLocality=" + a.getSubLocality()
+                            + ", thoroughfare=" + a.getThoroughfare()
+                            + ", feature=" + a.getFeatureName()
+                            + ", line0=" + a.getAddressLine(0)
+            );
 
             // 시/도
             String siDo = safe(a.getAdminArea());         // 예: 서울특별시/경기도
@@ -1394,9 +1382,15 @@ public class ChatActivity extends AppCompatActivity {
         }
         return sb.toString();
     }
-    private static String firstNonEmpty(String... arr) {
-        for (String s : arr) if (s != null && !s.trim().isEmpty()) return s.trim();
-        return "";
+
+    /** AddressLine(0)에서 '대한민국' 접두만 제거한 전체 주소를 돌려줌 */
+    private static String addressLineWithoutCountry(Address a) {
+        String s = a == null ? "" : (a.getAddressLine(0) == null ? "" : a.getAddressLine(0).trim());
+        if (s.startsWith("대한민국")) {
+            // "대한민국 " 또는 "대한민국\t" 등 공백 포함 접두 제거
+            s = s.replaceFirst("^대한민국\\s*", "");
+        }
+        return s;
     }
 
     private void updateSubtitleWithLocation(TextView tvLocation) {
@@ -1416,14 +1410,19 @@ public class ChatActivity extends AppCompatActivity {
 
                     // Geocoder는 블로킹이므로 워커스레드에서
                     new Thread(() -> {
-                        String addr = buildShortKoreanAddress(lastLat, lastLng);
-                        runOnUiThread(() -> {
-                            if (addr == null || addr.isEmpty()) {
-                                tvLocation.setText("위치 확인 불가");
-                            } else {
-                                lastAddress = addr;
-                                tvLocation.setText(addr); // 예: "서울특별시 강남구 대치동"
+                        String addr = "위치 확인 불가";
+                        try {
+                            Geocoder g = new Geocoder(this, Locale.KOREAN);
+                            List<Address> list = g.getFromLocation(lastLat, lastLng, 1);
+                            if (list != null && !list.isEmpty()) {
+                                addr = addressLineWithoutCountry(list.get(0));
+                                if (addr == null || addr.isEmpty()) addr = "위치 확인 불가";
                             }
+                        } catch (Exception ignored) {}
+                        final String finalAddr = addr;
+                        runOnUiThread(() -> {
+                            lastAddress = finalAddr;
+                            tvLocation.setText(finalAddr); // 예: "서울특별시 노원구 광운로 20"
                         });
                     }).start();
                 })
