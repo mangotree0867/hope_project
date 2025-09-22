@@ -708,6 +708,13 @@ public class ChatActivity extends AppCompatActivity {
                 formData.append(LINE_FEED);
                 formData.append(replyModeValue).append(LINE_FEED);
 
+                // Add location field (lastAddress contains the location from server or local geocoding)
+                String locationValue = lastAddress != null ? lastAddress : "";
+                formData.append("--").append(boundary).append(LINE_FEED);
+                formData.append("Content-Disposition: form-data; name=\"location\"").append(LINE_FEED);
+                formData.append(LINE_FEED);
+                formData.append(locationValue).append(LINE_FEED);
+
                 // Add file field
                 formData.append("--").append(boundary).append(LINE_FEED);
                 formData.append("Content-Disposition: form-data; name=\"file\"; filename=\"video.mp4\"").append(LINE_FEED);
