@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayout toolbarContainer;
     private Uri videoUri;
     private ExecutorService executorService;
-    private static final long MAX_VIDEO_SIZE_BYTES = 10 * 1024 * 1024; // 10MB in bytes
+    private static final long MAX_VIDEO_SIZE_BYTES = 100 * 1024 * 1024; // 100MB in bytes
     private boolean isGuest = false;
     private String authToken = "";
     private static final String BASE_URL = AppConfig.BASE_URL;
@@ -704,7 +704,11 @@ public class ChatActivity extends AppCompatActivity {
 
                             // 로그인 사용자라면 session_id 기억 + 폴링
                             if (!isGuest) {
-                                if (currentSessionId == 0 && sid > 0) currentSessionId = sid;
+                                if (currentSessionId == 0 && sid > 0) {
+                                    currentSessionId = sid;
+                                    // 세션 ID가 새로 설정되면 세션 상세정보로부터 위치 정보 업데이트
+                                    updateLocationFromSession(currentSessionId);
+                                }
                                 // 세션 id 갱신 직후 주소 저장 (채팅창 상단에 이미 주소가 찍혀 있다면)
                                 String savedAddrNow = null;
                                 TextView tvLocation = findViewById(R.id.toolbar_subtitle);
@@ -1404,6 +1408,53 @@ public class ChatActivity extends AppCompatActivity {
             Intent dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + emergencyNumber));
             startActivity(dial);
         }
+    }
+
+    private void updateLocationFromSession(int sessionId) {
+        if (sessionId <= 0) return;
+
+        executorService.execute(() -> {
+            try {
+                URL url = new URL(BASE_URL + "/chat-sessions/" + sessionId);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                if (!isGuest && authToken != null && !authToken.isEmpty()) {
+                    connection.setRequestProperty("Authorization", "Bearer " + authToken);
+                }
+
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(15000);
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+
+                    org.json.JSONObject sessionData = new org.json.JSONObject(response.toString());
+                    String locationInfo = sessionData.optString("location", "");
+
+                    if (!locationInfo.isEmpty()) {
+                        runOnUiThread(() -> {
+                            lastAddress = locationInfo;
+                            TextView tvLocation = findViewById(R.id.toolbar_subtitle);
+                            if (tvLocation != null) {
+                                tvLocation.setText(locationInfo);
+                            }
+                        });
+                    }
+                }
+                connection.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 
