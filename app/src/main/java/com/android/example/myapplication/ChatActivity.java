@@ -927,12 +927,47 @@ public class ChatActivity extends AppCompatActivity {
                         String line; while ((line = br.readLine()) != null) sb.append(line);
                     }
                     org.json.JSONObject res = new org.json.JSONObject(sb.toString());
+
+                    // Extract session information including location from server response
+                    org.json.JSONObject sessionObj = res.optJSONObject("session");
+                    String sessionLocation = null;
+                    String sessionTitle = null;
+                    if (sessionObj != null) {
+                        // Handle JSON null properly - don't convert to string "null"
+                        if (sessionObj.has("location") && !sessionObj.isNull("location")) {
+                            sessionLocation = sessionObj.optString("location", "");
+                        }
+                        sessionTitle = sessionObj.optString("session_title", "수어 채팅");
+                    }
+
                     org.json.JSONArray msgs = res.getJSONArray("messages");
+
+                    final String finalSessionLocation = sessionLocation;
+                    final String finalSessionTitle = sessionTitle;
 
                     runOnUiThread(() -> {
                         try {
                             // [GUARD] 로딩 도중 세션이 바뀌었으면 이 응답은 폐기
                             if (loadingSessionId != currentSessionId) return;
+
+                            // Update session title and location from server response
+                            if (finalSessionTitle != null) {
+                                TextView titleText = findViewById(R.id.toolbar_title);
+                                if (titleText != null) {
+                                    titleText.setText(finalSessionTitle);
+                                }
+                            }
+
+                            TextView subtitleText = findViewById(R.id.toolbar_subtitle);
+                            if (subtitleText != null) {
+                                if (finalSessionLocation != null && !finalSessionLocation.isEmpty()) {
+                                    subtitleText.setText(finalSessionLocation);
+                                    lastAddress = finalSessionLocation; // Update lastAddress for form submissions
+                                } else {
+                                    subtitleText.setText("위치 정보 없음");
+                                    lastAddress = ""; // Clear lastAddress when no location
+                                }
+                            }
 
                             // [REPLACE] 덮어쓰기 방식: 먼저 비우고 새로 채움
                             messages.clear();
