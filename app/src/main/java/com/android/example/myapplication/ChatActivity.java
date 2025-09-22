@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -88,6 +89,7 @@ public class ChatActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> callPermissionLauncher;
     private String emergencyNumber = "112"; // Default emergency number
     private static final String PREF_SESSION_META = "session_meta";
+    final boolean[] replyModeWords = { false }; // false=문장, true=단어
 
     // Callback interface for API response
     interface ApiCallback {
@@ -331,6 +333,20 @@ public class ChatActivity extends AppCompatActivity {
         
         // Set up video button
         btnAttachVideo.setOnClickListener(v -> showVideoOptions());
+
+// 토글 버튼 바인딩
+        AppCompatButton btnReplyMode = findViewById(R.id.btnReplyMode);
+        if (btnReplyMode != null) {
+            // 초기 표시: 문장
+            btnReplyMode.setText("문장");
+
+            btnReplyMode.setOnClickListener(v -> {
+                // 토글 전환
+                replyModeWords[0] = !replyModeWords[0];
+                // 토글 결과에 따라 버튼 텍스트 갱신
+                btnReplyMode.setText(replyModeWords[0] ? "단어" : "문장");
+            });
+        }
 
         // Get video path from intent
         String videoPath = getIntent().getStringExtra("videoPath");
@@ -771,6 +787,13 @@ public class ChatActivity extends AppCompatActivity {
                 formData.append(LINE_FEED);
                 formData.append(userContext).append(LINE_FEED);
 
+                // [이유] 사용자가 선택한 응답 형식(문장/단어)을 서버에 전달하여 서버가 그에 맞춰 저장/응답하도록 함
+                String replyModeValue = replyModeWords[0] ? "words" : "sentence"; // false=sentence, true=words
+                formData.append("--").append(boundary).append(LINE_FEED);
+                formData.append("Content-Disposition: form-data; name=\"reply_mode\"").append(LINE_FEED);
+                formData.append(LINE_FEED);
+                formData.append(replyModeValue).append(LINE_FEED);
+
                 // Add file field
                 formData.append("--").append(boundary).append(LINE_FEED);
                 formData.append("Content-Disposition: form-data; name=\"file\"; filename=\"video.mp4\"").append(LINE_FEED);
@@ -809,7 +832,26 @@ public class ChatActivity extends AppCompatActivity {
 
                     try {
                         org.json.JSONObject resp = new org.json.JSONObject(responseBody);
-                        final String assistantText = resp.optString("sentence", "");
+                        // [이유] 선택 모드에 따라 응답 텍스트를 달리 출력하기 위해 'sentence'와 'words'를 모두 파싱
+                        final String sentenceText = resp.optString("sentence", "");
+                        final org.json.JSONArray wordsArr = resp.optJSONArray("words");
+
+                        // words 배열을 보기 좋은 문자열로 변환
+                        String wordsText = "";
+                        if (wordsArr != null) {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < wordsArr.length(); i++) {
+                                if (i > 0) sb.append(", ");
+                                sb.append(wordsArr.optString(i, ""));
+                            }
+                            wordsText = sb.toString(); // 예: "단어1, 단어2, 단어3"
+                        }
+
+                        // 선택 모드에 따른 최종 표시 문자열 결정
+                        final String finalDisplayText = (replyModeWords[0])
+                                ? (wordsText.isEmpty() ? "[단어 없음]" : "[" + wordsText + "]")
+                                : (sentenceText.isEmpty() ? "(문장 없음)" : sentenceText);
+
                         final int sid = resp.optInt("session_id", 0);
 
                         runOnUiThread(() -> {
@@ -850,7 +892,7 @@ public class ChatActivity extends AppCompatActivity {
                                 startPollingAssistantUntilReply(currentSessionId);
                             } else {
                                 // 게스트라면 응답 메시지 즉시 표시
-                                messages.add(new ChatMessage(assistantText, ChatMessage.TYPE_BOT));
+                                messages.add(new ChatMessage(finalDisplayText, ChatMessage.TYPE_BOT));
                                 chatAdapter.notifyItemInserted(messages.size() - 1);
                                 recyclerView.scrollToPosition(messages.size() - 1);
                             }

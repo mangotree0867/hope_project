@@ -141,6 +141,21 @@
 
             </FrameLayout>
 
+            <!-- 👇 새로 추가: 전송 버튼 옆의 작은 토글 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnReplyMode"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginStart="8dp"
+                android:paddingStart="28dp"
+                android:paddingEnd="28dp"
+                android:background="@drawable/button_gradient_primary"
+                android:text="문장"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
