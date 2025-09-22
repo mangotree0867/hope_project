@@ -131,6 +131,23 @@ public class ChatActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_chat);
 
+        // Check if we need to show category selection dialog immediately
+        boolean needsCategorySelection = false;
+        authToken = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
+        isGuest = getIntent().getBooleanExtra("isGuest", false);
+        currentSessionId = getIntent().getIntExtra("sessionId", 0);
+
+        if (!isGuest && authToken != null && !authToken.isEmpty() && currentSessionId == 0) {
+            needsCategorySelection = true;
+        } else if (isGuest) {
+            needsCategorySelection = true;
+        }
+
+        // If we need category selection, hide the entire content to prevent flash
+        if (needsCategorySelection) {
+            findViewById(android.R.id.content).setVisibility(View.INVISIBLE);
+        }
+
         // Load emergency number from settings
         emergencyNumber = SettingsActivity.getEmergencyNumber(this);
 
@@ -187,17 +204,15 @@ public class ChatActivity extends AppCompatActivity {
         authToken = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
         isGuest = getIntent().getBooleanExtra("isGuest", false);
 
-        if (!isGuest && authToken != null && !authToken.isEmpty()) {
-            if (currentSessionId > 0) {
-                loadMessagesForSession(currentSessionId);
-            } else {
-                loadLatestSessionAndMessages();
-                // Show welcome popup for new chat
-                showNewChatDialog();
+        // Only load messages and show dialog if not already shown
+        if (!needsCategorySelection) {
+            if (!isGuest && authToken != null && !authToken.isEmpty()) {
+                if (currentSessionId > 0) {
+                    loadMessagesForSession(currentSessionId);
+                } else {
+                    loadLatestSessionAndMessages();
+                }
             }
-        } else if (isGuest) {
-            // Show welcome popup for guest users starting a new chat
-            showNewChatDialog();
         }
         TextView tvUserChat = findViewById(R.id.tv_user_name_chat);
         String token   = getSharedPreferences("auth", MODE_PRIVATE).getString("token", "");
@@ -360,6 +375,12 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         }
                     });
+        }
+
+        // Show category selection dialog if needed
+        if (needsCategorySelection) {
+            // Post to ensure UI is fully initialized
+            findViewById(android.R.id.content).post(() -> showNewChatDialog());
         }
     }
 
@@ -1242,14 +1263,32 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void showNewChatDialog() {
+        // Hide the camera button when showing category selection
+        if (btnAttachVideo != null) {
+            btnAttachVideo.setVisibility(View.GONE);
+        }
+        // Also hide the input card layout that contains the button
+        View inputLayout = findViewById(R.id.inputLayout);
+        if (inputLayout != null) {
+            inputLayout.setVisibility(View.GONE);
+        }
+
         // Inflate custom layout
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_selection, null);
 
         // Create dialog with custom view
         AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
                 .setView(dialogView)
-                .setCancelable(false)
+                .setCancelable(true)  // Allow back button to dismiss
                 .create();
+
+        // Handle dialog dismiss to finish activity without restoring UI
+        dialog.setOnCancelListener(dialogInterface -> {
+            // Don't restore UI visibility since we're closing the activity
+            // Use overridePendingTransition to remove animation
+            finish();
+            overridePendingTransition(0, 0);
+        });
 
         // Remove dim background completely
         if (dialog.getWindow() != null) {
@@ -1261,8 +1300,10 @@ public class ChatActivity extends AppCompatActivity {
         // Set back button listener
         ImageButton btnBack = dialogView.findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> {
+            // Don't restore UI visibility since we're closing the activity
             dialog.dismiss();
             finish(); // Go back to chat list
+            overridePendingTransition(0, 0); // No animation
         });
 
         // Set click listeners for each category button
@@ -1278,6 +1319,14 @@ public class ChatActivity extends AppCompatActivity {
                     .putString("category_" + currentSessionId, "FIRE_SITUATION")
                     .apply();
             Toast.makeText(this, "화재상황 선택됨", Toast.LENGTH_SHORT).show();
+            // Restore button visibility and show content
+            findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+            if (btnAttachVideo != null) {
+                btnAttachVideo.setVisibility(View.VISIBLE);
+            }
+            if (inputLayout != null) {
+                inputLayout.setVisibility(View.VISIBLE);
+            }
             dialog.dismiss();
         });
 
@@ -1288,6 +1337,14 @@ public class ChatActivity extends AppCompatActivity {
                     .putString("category_" + currentSessionId, "URBAN_SITUATION")
                     .apply();
             Toast.makeText(this, "도심상황 선택됨", Toast.LENGTH_SHORT).show();
+            // Restore button visibility and show content
+            findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+            if (btnAttachVideo != null) {
+                btnAttachVideo.setVisibility(View.VISIBLE);
+            }
+            if (inputLayout != null) {
+                inputLayout.setVisibility(View.VISIBLE);
+            }
             dialog.dismiss();
         });
 
@@ -1298,6 +1355,14 @@ public class ChatActivity extends AppCompatActivity {
                     .putString("category_" + currentSessionId, "TRAUMA")
                     .apply();
             Toast.makeText(this, "외상 선택됨", Toast.LENGTH_SHORT).show();
+            // Restore button visibility and show content
+            findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+            if (btnAttachVideo != null) {
+                btnAttachVideo.setVisibility(View.VISIBLE);
+            }
+            if (inputLayout != null) {
+                inputLayout.setVisibility(View.VISIBLE);
+            }
             dialog.dismiss();
         });
 
@@ -1308,6 +1373,14 @@ public class ChatActivity extends AppCompatActivity {
                     .putString("category_" + currentSessionId, "INTERNAL_INJURY")
                     .apply();
             Toast.makeText(this, "내상 선택됨", Toast.LENGTH_SHORT).show();
+            // Restore button visibility and show content
+            findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+            if (btnAttachVideo != null) {
+                btnAttachVideo.setVisibility(View.VISIBLE);
+            }
+            if (inputLayout != null) {
+                inputLayout.setVisibility(View.VISIBLE);
+            }
             dialog.dismiss();
         });
 
