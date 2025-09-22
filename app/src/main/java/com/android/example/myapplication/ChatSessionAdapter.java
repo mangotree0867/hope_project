@@ -17,16 +17,19 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
 
     private final List<ChatSession> sessions = new ArrayList<>();
     private final OnItemClick onItemClick;
+    private final OnEditClick onEditClick;
     private final Context context;
 
     private static final String PREF_SESSION_META = "session_meta";
     private final SimpleDateFormat fmt = new SimpleDateFormat("MM/dd a hh:mm", Locale.KOREA);
 
     public interface OnItemClick { void onClick(ChatSession session); }
+    public interface OnEditClick { void onEditTitle(ChatSession session); }
 
-    public ChatSessionAdapter(Context context, OnItemClick onItemClick) {
+    public ChatSessionAdapter(Context context, OnItemClick onItemClick, OnEditClick onEditClick) {
         this.context = context;
         this.onItemClick = onItemClick;
+        this.onEditClick = onEditClick;
     }
 
     public void setSessions(List<ChatSession> list) {
@@ -46,8 +49,12 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
     public void onBindViewHolder(@NonNull VH h, int pos) {
         ChatSession session = sessions.get(pos);
 
-        // Title
-        h.tvTitle.setText("수어 번역 세션 #" + session.getId());
+        // Title - use custom title if available, otherwise default
+        String title = session.getTitle();
+        if (title == null || title.trim().isEmpty()) {
+            title = "수어 번역 세션 #" + session.getId();
+        }
+        h.tvTitle.setText(title);
 
         // Time formatting - more user friendly
         long ts = parseSessionCreatedAtMillis(session.getCreatedAt());
@@ -73,10 +80,16 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
         // Last message preview (placeholder for now)
         h.tvPreview.setText("AI 수어 번역 대화를 시작하거나 계속할 수 있습니다.");
 
-        // Click listener
+        // Click listeners
         h.itemView.setOnClickListener(v -> {
             if (onItemClick != null) {
                 onItemClick.onClick(session);
+            }
+        });
+
+        h.btnEditTitle.setOnClickListener(v -> {
+            if (onEditClick != null) {
+                onEditClick.onEditTitle(session);
             }
         });
     }
@@ -85,6 +98,7 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
 
     static class VH extends RecyclerView.ViewHolder {
         TextView tvTitle, tvTime, tvLocation, tvMessageCount, tvPreview;
+        android.widget.ImageButton btnEditTitle;
         VH(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tv_title);
@@ -92,6 +106,7 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
             tvLocation = itemView.findViewById(R.id.tv_location);
             tvMessageCount = itemView.findViewById(R.id.tv_message_count);
             tvPreview = itemView.findViewById(R.id.tv_preview);
+            btnEditTitle = itemView.findViewById(R.id.btn_edit_title);
         }
     }
 

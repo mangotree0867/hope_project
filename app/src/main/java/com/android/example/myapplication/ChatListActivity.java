@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -68,6 +71,9 @@ public class ChatListActivity extends AppCompatActivity {
             intent.putExtra("isGuest", false);
             intent.putExtra("sessionId", session.getId());
             startActivity(intent);
+        },
+                /* onEditClick = */ session -> {
+            showEditTitleDialog(session);
         }
         );
         rvSessions.setAdapter(adapter);
@@ -129,7 +135,9 @@ public class ChatListActivity extends AppCompatActivity {
                         int id = s.getInt("id");
                         String created = s.optString("created_at", "");
                         int count = s.optInt("message_count", 0);
+                        String sessionTitle = s.optString("session_title", "");
                         ChatSession session = new ChatSession(id, created, count);
+                        session.setTitle(sessionTitle);
                         String savedAddr = getSharedPreferences("session_meta", MODE_PRIVATE)
                                 .getString("addr_" + id, "");
                         session.setAddress(savedAddr);
@@ -159,5 +167,75 @@ public class ChatListActivity extends AppCompatActivity {
             emptyState.setVisibility(View.GONE);
             rvSessions.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showEditTitleDialog(ChatSession session) {
+        // Inflate custom dialog layout
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_title, null);
+        EditText editTitle = dialogView.findViewById(R.id.edit_title);
+        editTitle.setText(session.getTitle() != null ? session.getTitle() : "");
+
+        // Create dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Set dialog background to transparent to show custom background
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        // Handle button clicks
+        dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.btn_save).setOnClickListener(v -> {
+            String newTitle = editTitle.getText().toString().trim();
+            if (!newTitle.isEmpty()) {
+                updateSessionTitle(session, newTitle);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(this, "제목을 입력해주세요", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void updateSessionTitle(ChatSession session, String newTitle) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(BASE_URL + "/chat-sessions/" + session.getId() + "/title");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Authorization", "Bearer " + authToken);
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(10000);
+
+                // Create JSON body
+                String jsonBody = "{\"title\":\"" + newTitle.replace("\"", "\\\"") + "\"}";
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(jsonBody.getBytes("UTF-8"));
+                }
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 200) {
+                    runOnUiThread(() -> {
+                        // Update local session object
+                        session.setTitle(newTitle);
+                        // Notify adapter of the change
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(this, "제목이 변경되었습니다", Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    String errorMsg = "제목 변경 실패 (코드: " + responseCode + ")";
+                    runOnUiThread(() -> Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show());
+                }
+                conn.disconnect();
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, "네트워크 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 }

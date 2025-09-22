@@ -36,6 +36,19 @@
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
+        <!-- Edit button -->
+        <ImageButton
+            android:id="@+id/btn_edit_title"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            android:tint="#AAAAAA"
+            android:contentDescription="제목 편집"
+            android:padding="4dp"/>
+
         <!-- Time badge -->
         <TextView
             android:id="@+id/tv_time"

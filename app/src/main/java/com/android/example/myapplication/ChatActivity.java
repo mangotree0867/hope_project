@@ -168,27 +168,35 @@ public class ChatActivity extends AppCompatActivity {
         ImageButton btnEmergency = findViewById(R.id.btnEmergencyCall);
         if (btnEmergency != null) {
             btnEmergency.setOnClickListener(v -> {
-                androidx.appcompat.app.AlertDialog dialog =
-                        new androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle("긴급전화")
-                                .setMessage(emergencyNumber + "에 전화하시겠습니까?")
-                                .setNegativeButton("취소", (d, w) -> d.dismiss())
-                                .setPositiveButton("긴급전화", (d, w) -> {
-                                    // 권한 체크 → 없으면 요청, 있으면 바로 통화
-                                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-                                            == PackageManager.PERMISSION_GRANTED) {
-                                        startEmergencyCall();
-                                    } else {
-                                        callPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
-                                    }
-                                })
-                                .create();
+                // Inflate custom dialog layout
+                View dialogView = getLayoutInflater().inflate(R.layout.dialog_emergency_call, null);
+                TextView tvPhoneNumber = dialogView.findViewById(R.id.tv_phone_number);
+                tvPhoneNumber.setText(emergencyNumber);
+
+                // Create dialog
+                androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setCancelable(true)
+                        .create();
+
+                // Set dialog background to transparent to show custom background
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+                // Handle button clicks
+                dialogView.findViewById(R.id.btn_cancel).setOnClickListener(cancelView -> dialog.dismiss());
+
+                dialogView.findViewById(R.id.btn_emergency_call).setOnClickListener(callView -> {
+                    // 권한 체크 → 없으면 요청, 있으면 바로 통화
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        startEmergencyCall();
+                    } else {
+                        callPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
+                    }
+                    dialog.dismiss();
+                });
+
                 dialog.show();
-                // "긴급전화" 버튼 빨간색
-                dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                        .setTextColor(0xFFD32F2F);
-                dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
-                        .setTextColor(0xFF888888);
             });
         }
         // [ADD] 목록에서 전달된 세션 ID 수신 (없으면 0)

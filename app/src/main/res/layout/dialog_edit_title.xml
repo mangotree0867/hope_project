@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:layout_gravity="center">
+
+    <!-- Dialog Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFB03B"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="세션 제목 편집"
+            android:textColor="#3D2914"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Input Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="새로운 제목을 입력하세요"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/edit_title"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edittext_background"
+            android:hint="세션 제목을 입력하세요"
+            android:textColorHint="#888888"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp">
+
+        <!-- Cancel Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_gradient_secondary"
+            android:text="취소"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Save Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_save"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_gradient_primary"
+            android:text="저장"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
